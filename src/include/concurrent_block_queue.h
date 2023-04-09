@@ -1,3 +1,6 @@
+#ifndef CONCURRENT_BLOCK_QUEUE_H
+#define CONCURRENT_BLOCK_QUEUE_H
+
 #include <condition_variable>
 #include <cstddef>
 #include <memory>
@@ -109,3 +112,6 @@ namespace ds {
       }
     };
 } // namespace ds
+
+
+#endif // CONCURRENT_BLOCK_QUEUE_H

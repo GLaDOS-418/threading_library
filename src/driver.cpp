@@ -1,10 +1,8 @@
 #include "concurrent_std_queue.h"
 #include "concurrent_block_queue.h"
-#include <cstddef>
-#include <cstdlib>
-#include <iostream>
-#include <iterator>
-#include <utility>
+#include "thread_pool.h"
+
+#include <bits/stdc++.h>
 
 using namespace std;
 

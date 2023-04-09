@@ -1,3 +1,6 @@
+#ifndef CONCURRENT_STD_QUEUE_H
+#define CONCURRENT_STD_QUEUE_H
+
 #include <condition_variable>
 #include <cstddef>
 #include <cstdlib>
@@ -56,3 +59,5 @@ namespace ds {
   };
 
 } // namespace ds
+
+#endif // CONCURRENT_STD_QUEUE_H
