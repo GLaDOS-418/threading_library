@@ -1,5 +1,7 @@
 build/*
 .vscode/*
+.vs/*
 .cache/*
+Testing/*
 
 CMakeUserPresets.json

@@ -1,5 +1,5 @@
 [requires]
-catch2/2.13.9
+catch2/3.3.2
 benchmark/1.7.1
 
 [generators]

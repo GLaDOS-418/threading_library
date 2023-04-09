@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 3.22)
+set( CMAKE_VERSION 3.23)
+
+cmake_minimum_required(VERSION ${CMAKE_VERSION})
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -36,17 +38,19 @@ conan_add_remote(NAME conancenter
   https://center.conan.io
   )
 
-# conan_basic_setup()
 
+# interface means a header only library
+add_library( ${PROJECT_NAME}-lib INTERFACE )
 
+# ADD INCLUDE FOLDERS
+target_include_directories( ${PROJECT_NAME}-lib INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/src/include )
 
 # ADD EXECUTABLE
 add_executable( ${PROJECT_NAME} 
   src/driver.cpp
   )
 
-# ADD INCLUDE FOLDERS
-target_include_directories( ${PROJECT_NAME} PUBLIC src/include )
+target_link_libraries( ${PROJECT_NAME} PRIVATE ${PROJECT_NAME}-lib )
 
 # ADD INTERNAL LIBRARIES
 ## add_library( ${PROJECT_NAME}-lib <file1.cpp> <file2.cpp> )
@@ -58,7 +62,7 @@ target_include_directories( ${PROJECT_NAME} PUBLIC src/include )
 
 set(CLANG_WARNINGS
   -Wall
-  -Wextra  # reasonable and standard
+  -Wextra 
   -Wshadow # warn the user if a variable declaration shadows one from a
   # parent context
   -Wnon-virtual-dtor # warn the user if a class with virtual functions has a
@@ -79,5 +83,19 @@ set(CLANG_WARNINGS
 
   # sanitizers
   -fsanitize=undefined,address
+
+  #compile with gdb debug info
+  -ggdb3
   )
 
+add_compile_options( ${CLANG_WARNINGS} )
+
+link_libraries("-fsanitize=address")
+
+# catch2 set up
+# option(BUILD_TESTS "Enables building the Catch2 unit tests" ON)
+
+#if(BUILD_TESTS)
+   enable_testing()
+   add_subdirectory(test)
+   #endif()
