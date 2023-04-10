@@ -16,19 +16,27 @@ namespace ds {
     struct Tail;
 
     Head m_head;
-    std::mutex m_head_lock;
+    mutable std::mutex m_head_lock;
 
     Tail m_tail;
-    std::mutex m_tail_lock;
+    mutable std::mutex m_tail_lock;
 
     std::condition_variable cv;
 
-    bool empty() {
+    std::atomic<size_t> m_size;
+
+    inline auto get_tail( ) const {
       std::lock_guard<std::mutex> guard(m_tail_lock);
-      return m_head.get() == m_tail.get() && m_head.offset == m_tail.offset;
+      return std::pair{m_tail.get( ), m_tail.offset};
+    }
+
+    inline bool compare_head_tail( ) const {
+      auto [tail_block,tail_offset] = get_tail();
+      return m_head.get() == tail_block && m_head.offset == tail_offset;
     }
 
     public:
+
     ConcurrentBlockQueue()
       : m_head{.head_block = std::make_unique<Node>(), .offset = 0},
       m_tail{.tail_block = m_head.head_block.get(), .offset = m_head.offset} {
@@ -37,23 +45,35 @@ namespace ds {
     void push(T val) {
       std::lock_guard<std::mutex> guard(m_tail_lock);
       m_tail.add_data(std::forward<T>(val));
+      ++m_size;
       cv.notify_one();
     }
 
     std::optional<T> try_pop() {
       std::lock_guard<std::mutex> guard(m_head_lock);
-      if (empty()) {
+      if (compare_head_tail()) {
         return {};
       }
 
+      --m_size;
       return {m_head.pop()};
     }
 
     T wait_and_pop() {
       std::unique_lock<std::mutex> guard(m_head_lock);
-      cv.wait(guard, [&]() { return not empty(); });
+      cv.wait(guard, [&]() { return not compare_head_tail(); });
 
+      --m_size;
       return {m_head.pop()};
+    }
+
+    bool empty() const {
+      std::lock_guard<std::mutex> guard(m_head_lock);
+      return compare_head_tail( );
+    }
+
+    size_t size( ) const {
+      return m_size;
     }
   };
 
