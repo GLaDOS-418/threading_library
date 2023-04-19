@@ -13,19 +13,19 @@
 
 ### Features
 
-1. [ds::ConcurrentStdQueue](./src/include/concurrent_std_queue.h) : thread-safe, unordered* queue using `std::queue`. 
-    - e.g. `ds::ConcurrentStdQueue<int> sq;`
+1. [ds::ConcurrentDeque](./src/include/concurrent_std_queue.h) : thread-safe, unordered* queue using `std::deque`. 
+    - e.g. `ds::ConcurrentDeque<std::string> sq;`
 2. [ds::ConcurrentBlockQueue](./src/include/concurrent_block_queue.h) : thread-safe, unordered*, custom queue. 
     - with `BLOCK_SIZE=1`, it's essentially a queue based on singly linked-list. default is `BLOCK_SIZE=512`
-    - e.g. `ds::ConcurrentBlockQueue<int,1> bq;`
+    - using custom block size :  `ds::ConcurrentBlockQueue<std::,256> bq;`
 
 <img src="./resources/images/concurrent_blocked_queue.svg" alt="block_queue" style="max-width: 70%;"/>
 
-\* unordered = you can't decide priority. the order is maintained once entered in the queue.
+\* unordered = you can't decide priority.
 
 ### Build
 
-1. Manually setup these: cmake, conan, clang, gdb
+1. required : cmake, conan, clang, gdb
 2. run `$ ./project_build.sh`
 
 

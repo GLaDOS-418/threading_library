@@ -7,7 +7,7 @@
 #include <thread>
 
 #include "concurrent_block_queue.h"
-#include "concurrent_std_queue.h"
+#include "concurrent_deque.h"
 
 TEST_CASE("block_queue_wait_and_pop", "[ConcurrentDatastructures]") {
   ds::ConcurrentBlockQueue<std::string,1> bq;
@@ -58,7 +58,7 @@ TEST_CASE("block_queue_try_pop", "[ConcurrentDatastructures]") {
 }
 
 TEST_CASE("std_queue_try_pop", "[ConcurrentDatastructures]") {
-  ds::ConcurrentStdQueue<std::string> sq;
+  ds::ConcurrentDeque<std::string> sq;
 
   size_t n = 1'000'000;
 

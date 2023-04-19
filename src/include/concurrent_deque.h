@@ -1,31 +1,33 @@
-#ifndef CONCURRENT_STD_QUEUE_H
-#define CONCURRENT_STD_QUEUE_H
+#ifndef CONCURRENT_DEQUE_H
+#define CONCURRENT_DEQUE_H
 
 #include <condition_variable>
 #include <cstddef>
 #include <cstdlib>
+#include <deque>
 #include <iostream>
 #include <memory>
 #include <mutex>
 #include <optional>
-#include <queue>
 #include <thread>
 #include <utility>
 
 namespace ds {
 
-  template <typename Data> class ConcurrentStdQueue {
-    std::queue<Data> data;
+  template <typename Data>
+    requires(std::copyable<Data> || std::movable<Data>)
+  class ConcurrentDeque {
+    std::deque<Data> data;
     mutable std::mutex lock;
     std::condition_variable conditional;
 
     auto pop_and_return() {
       auto retval = std::move(data.front());
-      data.pop();
+      data.pop_back();
       return retval;
     }
 
-    public:
+  public:
     std::optional<Data> try_pop() {
       std::lock_guard<std::mutex> guard(lock);
       if (data.empty())
@@ -43,7 +45,7 @@ namespace ds {
 
     void push(Data val) {
       std::lock_guard<std::mutex> guard(lock);
-      data.emplace(val);
+      data.emplace_back(val);
       conditional.notify_one();
     }
 
@@ -60,4 +62,4 @@ namespace ds {
 
 } // namespace ds
 
-#endif // CONCURRENT_STD_QUEUE_H
+#endif // CONCURRENT_DEQUE_H
