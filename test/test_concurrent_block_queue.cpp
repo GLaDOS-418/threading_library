@@ -1,26 +1,27 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_all.hpp>
-
 #include <catch2/catch_test_macros.hpp>
+
 #include <cstddef>
+#include <iterator>
 #include <thread>
 
 #include "concurrent_block_queue.h"
 #include "concurrent_std_queue.h"
 
 TEST_CASE("block_queue_wait_and_pop", "[ConcurrentDatastructures]") {
-  ds::ConcurrentBlockQueue<size_t,1> bq;
+  ds::ConcurrentBlockQueue<std::string,1> bq;
   size_t n = 1'000'000;
   auto t1 = std::jthread([&]() {
     for (auto i = 0u; i < n; ++i)
-      bq.push(i);
+      bq.push(std::to_string(i));
   });
 
   auto t2 = std::jthread([&]() {
-    size_t sum = 0;
+    long sum = 0;
     for (auto i = 0u; i < n; ++i) {
       auto data = bq.wait_and_pop();
-      sum += data;
+      sum += std::stoi(data);
     }
 
     REQUIRE(sum == 499'999'500'000);
@@ -29,24 +30,23 @@ TEST_CASE("block_queue_wait_and_pop", "[ConcurrentDatastructures]") {
   REQUIRE(bq.size() == 0);
 }
 
-
 TEST_CASE("block_queue_try_pop", "[ConcurrentDatastructures]") {
-  ds::ConcurrentBlockQueue<size_t> bq;
+  ds::ConcurrentBlockQueue<std::string> bq;
 
   size_t n = 1'000'000;
 
   auto t1 = std::jthread([&]() {
     for (auto i = 0u; i < n; ++i)
-      bq.push(i);
+      bq.push(std::to_string(i));
   });
 
   auto t2 = std::jthread([&]() {
-    size_t sum = 0;
+    long sum = 0;
     auto i = 0u;
     while (i < n) {
       auto data = bq.try_pop();
       if (data) {
-        sum += *data;
+        sum += std::stoi(*data);
         ++i;
       }
     }
@@ -54,26 +54,26 @@ TEST_CASE("block_queue_try_pop", "[ConcurrentDatastructures]") {
     REQUIRE(sum == 499'999'500'000);
   });
 
-  REQUIRE(bq.size() == 0);
+   REQUIRE(bq.size() == 0);
 }
 
 TEST_CASE("std_queue_try_pop", "[ConcurrentDatastructures]") {
-  ds::ConcurrentStdQueue<size_t> sq;
+  ds::ConcurrentStdQueue<std::string> sq;
 
   size_t n = 1'000'000;
 
   auto t1 = std::jthread([&]() {
     for (auto i = 0u; i < n; ++i)
-      sq.push(i);
+      sq.push(std::to_string(i));
   });
 
   auto t2 = std::jthread([&]() {
-    size_t sum = 0;
+    long sum = 0;
     auto i = 0u;
     while (i < n) {
       auto data = sq.try_pop();
       if (data) {
-        sum += *data;
+        sum += std::stoi(*data);
         INFO( sum );
         ++i;
       }
