@@ -1,7 +1,7 @@
 .PHONY: build clean rebuild test testout
 
 build:
-	./setup.sh
+	./project_build.sh
 clean:
 	/bin/rm -r build/
 rebuild: clean build

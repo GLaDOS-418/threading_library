@@ -25,8 +25,8 @@
 
 ### Build
 
-1. Manually setup: cmake, conan, clang, gdb
-2. run `$ ./setup.sh`
+1. Manually setup these: cmake, conan, clang, gdb
+2. run `$ ./project_build.sh`
 
 
 ### Test
