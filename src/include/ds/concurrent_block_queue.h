@@ -57,9 +57,7 @@ namespace ds {
       }
 
       ~Head( ){
-        // turn the deletion of head_block as iterative
-        // rather than recursive to avoid any stack overflow issues.
-        // problematic only for the last node.
+        // delete last node(empty) for queue destruction
         auto next = std::move(head_block->next);
         head_block = std::move(next);
       }

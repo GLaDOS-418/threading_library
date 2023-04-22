@@ -5,7 +5,6 @@
 #include <cstddef>
 #include <cstdlib>
 #include <deque>
-#include <iostream>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -16,7 +15,7 @@ namespace ds {
 
   template <typename Data>
     requires(std::copyable<Data> || std::movable<Data>)
-  class ConcurrentDeque {
+  class BlockingDeque {
     std::deque<Data> data;
     mutable std::mutex lock;
     std::condition_variable conditional;
