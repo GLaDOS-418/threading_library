@@ -23,7 +23,7 @@ namespace ds {
 
     auto pop_and_return() {
       auto retval = std::move(data.front());
-      data.pop_back();
+      data.pop_front();
       return retval;
     }
 

@@ -37,7 +37,6 @@ namespace ds {
       std::mutex lock;
 
       T pop_data( ) {
-        //std::cout << "remove data @ : " << head_block.get() << std::endl;
         auto retval = head_block->data[block_offset]; 
         update_head();
         return retval;
@@ -91,7 +90,6 @@ namespace ds {
       void update_tail( ) {
         ++block_offset;
         if( block_offset == BLOCK_SIZE ) { 
-          //tail_block->next = std::make_unique<Node>();
           auto next = std::make_unique<Node>();
           tail_block->next = std::move(next);
           tail_block = (tail_block->next).get( );
@@ -100,7 +98,6 @@ namespace ds {
       }
 
       inline void add_data( T val) {
-        //std::cout << "add_data @ : " << tail_block << std::endl;
         tail_block->data.emplace_back(val);
         update_tail();
       }
@@ -133,9 +130,9 @@ namespace ds {
     ConcurrentBlockQueue& operator= ( ConcurrentBlockQueue&& ) = delete;
     ~ConcurrentBlockQueue( ) = default;
 
-    void push( T val ){
+    void push( T&& val ){
       std::lock_guard<std::mutex> guard(m_tail.lock);
-      m_tail.add_data(val);
+      m_tail.add_data(std::move(val));
       ++m_size;
       push_pop_sync.notify_one();
     }
