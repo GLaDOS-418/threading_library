@@ -37,7 +37,7 @@ namespace ds {
       std::mutex lock;
 
       T pop_data( ) {
-        auto retval = head_block->data[block_offset]; 
+        auto retval = std::move(head_block->data[block_offset]); 
         update_head();
         return retval;
       }
@@ -64,8 +64,8 @@ namespace ds {
 
       Head( const Head& ) = delete;
       Head& operator=( const Head& ) = delete;
-      Head( Head&& ) = delete;
-      Head& operator=( Head&& ) = delete;
+      Head( Head&& ) = default;
+      Head& operator=( Head&& ) = default;
       Head( std::unique_ptr<Node> _head ) : 
         head_block(std::move( _head )), block_offset(0)
       { }
@@ -81,8 +81,8 @@ namespace ds {
       ~Tail( ) = default;
       Tail( const Tail& ) = delete;
       Tail& operator=( const Tail& ) = delete;
-      Tail( Tail&& ) = delete;
-      Tail& operator=( Tail&& ) = delete;
+      Tail( Tail&& ) = default;
+      Tail& operator=( Tail&& ) = default;
 
 
       void update_tail( ) {
@@ -124,8 +124,9 @@ namespace ds {
 
     ConcurrentBlockQueue ( const ConcurrentBlockQueue& ) = delete;
     ConcurrentBlockQueue& operator= ( const ConcurrentBlockQueue& ) = delete;
-    ConcurrentBlockQueue ( ConcurrentBlockQueue&& ) = delete;
-    ConcurrentBlockQueue& operator= ( ConcurrentBlockQueue&& ) = delete;
+
+    ConcurrentBlockQueue ( ConcurrentBlockQueue&& ) = default;
+    ConcurrentBlockQueue& operator= ( ConcurrentBlockQueue&& ) = default;
     ~ConcurrentBlockQueue( ) = default;
 
     void push( T&& val ){
@@ -150,7 +151,7 @@ namespace ds {
       std::unique_lock<std::mutex> guard(m_head.lock);
       push_pop_sync.wait(guard, [this]( ){ return not empty( ); } );
 
-      auto data = m_head.pop_data( );
+      auto data{m_head.pop_data( )};
       --m_size;
 
       return data;

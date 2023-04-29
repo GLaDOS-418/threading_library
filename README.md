@@ -11,9 +11,9 @@ A simple threading library.
     - usage: `ds::BlockingDeque<std::string> sq;`
 
 2. [ds::ConcurrentBlockQueue](./src/include/ds/concurrent_block_queue.h)
-    - fine-grained lock-based, FIFO structure. 
+    - fine-grained locking, FIFO structure. 
     - with `BLOCK_SIZE=1`, it's essentially a queue based on singly linked-list. default is `BLOCK_SIZE=512`
-    - unless necessary, push & pop can be independently without blocking each other.
+    - unless necessary, push & pop can work independently without blocking each other.
     - usage :  `ds::ConcurrentBlockQueue<std::,256> bq;`
 
 <img src="./resources/images/concurrent_blocked_queue.svg" alt="block_queue" style="max-width: 70%;"/>
@@ -38,6 +38,6 @@ A simple threading library.
 
 
 ### TODO
-- Add more features, like thread pool, concurrent cache, lock free queue etc.
+- Add more features, like thread pool, concurrent cache, concurrent stack, lock free queue, zip algorithm etc.
 - Setup environment in a dockerfile.
 - Add github actions.
