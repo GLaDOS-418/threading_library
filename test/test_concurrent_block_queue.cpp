@@ -21,7 +21,8 @@ TEST_CASE("block_queue_wait_and_pop", "[ConcurrentDatastructures]") {
     long sum = 0;
     for (auto i = 0u; i < n; ++i) {
       auto data = bq.wait_and_pop();
-      sum += std::stoi(data);
+      if(data)
+        sum += std::stoi(*data);
     }
 
     REQUIRE(sum == 499'999'500'000);
