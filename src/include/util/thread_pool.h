@@ -11,9 +11,9 @@
 #include <ds/concurrent_block_queue.h>
 #include <util/function_wrapper.h>
 
-namespace utility {
+namespace util {
 
-  class thread_pool {
+  class ThreadPool {
     using WaitableTask =  FunctionWrapper;
     using TaskQueue    =  ds::ConcurrentBlockQueue<WaitableTask>;
     using WorkerGroup  =  std::vector<std::jthread>;
@@ -24,7 +24,9 @@ namespace utility {
 
     void worker_method() {
       while (!done) {
-        tasks.wait_and_pop()( );
+        auto task = tasks.wait_and_pop();
+        if(task)
+          (*task)( );
       }
     }
 
@@ -34,37 +36,39 @@ namespace utility {
 
     public:
 
-    void shutdown( ){
-      done = false;
+    void join( ){
+      done = true;
+      tasks.enable_clear_mode();
     }
 
-    thread_pool(const size_t total_workers = compute_concurrency( )) : done(false) { 
+    ThreadPool(const size_t total_workers = compute_concurrency( )) : done(false) { 
       try{ 
         for( auto i=0u; i<total_workers; ++i)
-          workers.emplace_back( std::jthread(&utility::thread_pool::worker_method, this) );
+          workers.emplace_back( std::jthread(&util::ThreadPool::worker_method, this) );
       }
       catch(...){
-        shutdown();
+        join();
         throw ;
       }
     }
 
-    thread_pool( const thread_pool& ) = delete;
-    thread_pool& operator=( const thread_pool& ) = delete;
+    ThreadPool( const ThreadPool& ) = delete;
+    ThreadPool& operator=( const ThreadPool& ) = delete;
 
-    thread_pool( thread_pool&& ) = delete;
-    thread_pool& operator=( thread_pool&& ) = delete;
+    ThreadPool( ThreadPool&& ) = delete;
+    ThreadPool& operator=( ThreadPool&& ) = delete;
 
-    ~thread_pool( ){
-      shutdown();
+    ~ThreadPool( ){
+      join();
     }
 
-    template<typename Fn>
-    auto submit( Fn callable ){
-      std::packaged_task<std::invoke_result_t<Fn( )>> task(std::move(callable));
+    template<typename Fn, typename... Args>
+    std::future<std::invoke_result_t<Fn, Args...>> submit( Fn callable, Args&&... args){
+      using return_t = std::invoke_result_t<Fn, Args...>;
+      std::packaged_task<return_t( )> task(std::bind(std::forward<Fn>(callable), std::forward<Args>(args)...));
 
       auto result{task.get_future( )};
-      tasks.push(std::move(callable));
+      tasks.push(std::move(task));
 
       return result;
     }

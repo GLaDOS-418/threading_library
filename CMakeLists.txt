@@ -82,15 +82,18 @@ set(CLANG_WARNINGS
   # (ie printf)
 
   # sanitizers
+  #-fsanitize=undefined,thread
   -fsanitize=undefined,address
 
   #compile with gdb debug info
   -ggdb3
+  #-g3
   )
 
 add_compile_options( ${CLANG_WARNINGS} )
 
 link_libraries("-fsanitize=address")
+#link_libraries("-fsanitize=thread")
 
 # catch2 set up
 # option(BUILD_TESTS "Enables building the Catch2 unit tests" ON)
