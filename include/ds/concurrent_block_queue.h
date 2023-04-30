@@ -144,9 +144,8 @@ namespace ds {
      *  retval: 0= SUCCESS, 1= FAILED
      */
     size_t push( T&& val ){
-      if(m_clear_mode_enabled) return 1;
-
       std::lock_guard<std::mutex> guard(m_tail.lock);
+      if(m_clear_mode_enabled) return 1;
       m_tail.add_data(std::move(val));
       ++m_size;
       m_queue_signal.notify_one();

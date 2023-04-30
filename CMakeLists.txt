@@ -43,7 +43,7 @@ conan_add_remote(NAME conancenter
 add_library( ${PROJECT_NAME}-lib INTERFACE )
 
 # ADD INCLUDE FOLDERS
-target_include_directories( ${PROJECT_NAME}-lib INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/src/include )
+target_include_directories( ${PROJECT_NAME}-lib INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include )
 
 # ADD EXECUTABLE
 add_executable( ${PROJECT_NAME} 

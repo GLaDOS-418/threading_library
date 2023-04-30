@@ -3,19 +3,19 @@
 a threading library that is:
 - simple 
 - standalone
-- header-only
+- header-only (everything inside `./include`)
 - uses only standard C++
 
 ### features
 
 #### data structures
 
-##### [ds::BlockingDeque](./src/include/ds/blocking_deque.h)
+##### [ds::BlockingDeque](./include/ds/blocking_deque.h)
 - synchronised queue implemented using `std::deque`
 - usage: `ds::BlockingDeque<std::string> sq;`
 - **TODO**: make this just a wrapper to provide same functionalities as `std::deque`.
 
-##### [ds::ConcurrentBlockQueue](./src/include/ds/concurrent_block_queue.h)
+##### [ds::ConcurrentBlockQueue](./include/ds/concurrent_block_queue.h)
 - fine-grained locking, FIFO structure. 
 - with `BLOCK_SIZE=1`, it's essentially a queue based on singly linked-list. default is `BLOCK_SIZE=512`
 - unless necessary, push & pop can work independently without blocking each other.
@@ -24,17 +24,17 @@ a threading library that is:
 
 #### utilities
 
-##### [util::FunctionWrapper](./src/include/util/function_wrapper.h)
+##### [util::FunctionWrapper](./include/util/function_wrapper.h)
 - a type erased function wrapper
 - nothing to do with concurrency but, implemented so why not just use it.
-- usage : `FunctionWrapper{ [ ]( ){ /*  do something in this lambda */; } };`
+- usage : `util::FunctionWrapper{ [ ]( ){ /*  do something in this lambda */; } };`
 
 
-##### [util::ThreadPool](./src/include/util/thread_pool.h)
+##### [util::ThreadPool](./include/util/thread_pool.h)
 - a thread pool with customisable number of worker threads.
 - default pool size is determined by `std::thread::hardware_concurrency( )`.
 - during task submission, a `std::future<T>` is returned to make the results available later.
-- usage : `ThreadPool tp(20);`
+- usage : `util::ThreadPool tp(20);`
 
 
 ### build
