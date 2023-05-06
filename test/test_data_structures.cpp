@@ -9,6 +9,7 @@
 #include <ds/concurrent_block_queue.h>
 #include <ds/concurrent_hash_map.h>
 #include <ds/synchronized_queue.h>
+#include <ds/concurrent_stack.h>
 
 TEST_CASE("block_queue_wait_and_pop", "[ConcurrentDS]") {
   ds::ConcurrentBlockQueue<std::string,1> bq;
@@ -131,4 +132,135 @@ TEST_CASE("concurrent_hash_map", "[ConcurrentDS]") {
   t3.join();
 
   REQUIRE( cmap.was_size( ) == (n>>1) );
+}
+
+
+TEST_CASE("bounded_concurrent_stack_wait_pop", "[ConcurrentDS]") {
+
+  ds::ConcurrentStack<std::string,200> stck;
+
+  int n = 100'000;
+
+  auto t1 = std::thread(
+      [&stck,n]( ){
+        for( int i=0; i<n;  ){
+          auto success = stck.push(std::to_string(i));
+          if(success)
+            ++i;
+        }
+      }
+  );
+
+  auto t2 = std::thread(
+      [&stck,n] ( ){
+        for(int i=0;i<n;++i){
+          auto stackVal = stck.wait_and_pop();
+        }
+      }
+      );
+
+  t1.join();
+  t2.join();
+
+  REQUIRE(stck.was_size()==0);
+}
+
+
+TEST_CASE("bounded_concurrent_stack_try_pop", "[ConcurrentDS]") {
+
+  ds::ConcurrentStack<std::string,200> stck;
+
+  int n = 100'000;
+
+  auto t1 = std::thread(
+      [&stck,n]( ){
+        for( int i=0; i<n; ){
+          auto success = stck.push(std::to_string(i));
+          if(success)
+            ++i;
+        }
+      }
+  );
+
+  auto t2 = std::thread(
+      [&stck,n] ( ){
+        for(int i=0;i<n;){
+          auto stackVal = stck.try_pop();
+          if(stackVal) {
+            ++i;
+          }
+        }
+      }
+      );
+
+  t1.join();
+  t2.join();
+
+  REQUIRE(stck.was_size()==0);
+}
+
+
+
+TEST_CASE("unbounded_concurrent_stack_wait_pop", "[ConcurrentDS]") {
+
+  ds::ConcurrentStack<std::string> stck;
+
+  int n = 100'000;
+
+  auto t1 = std::thread(
+      [&stck,n]( ){
+        for( int i=0; i<n;  ){
+          auto success = stck.push(std::to_string(i));
+          if(success)
+            ++i;
+        }
+      }
+  );
+
+  auto t2 = std::thread(
+      [&stck,n] ( ){
+        for(int i=0;i<n;++i){
+          auto stackVal = stck.wait_and_pop();
+        }
+      }
+      );
+
+  t1.join();
+  t2.join();
+
+  REQUIRE(stck.was_size()==0);
+}
+
+
+TEST_CASE("unbounded_concurrent_stack_try_pop", "[ConcurrentDS]") {
+
+  ds::ConcurrentStack<std::string> stck;
+
+  int n = 100'000;
+
+  auto t1 = std::thread(
+      [&stck,n]( ){
+        for( int i=0; i<n; ){
+          auto success = stck.push(std::to_string(i));
+          if(success)
+            ++i;
+        }
+      }
+  );
+
+  auto t2 = std::thread(
+      [&stck,n] ( ){
+        for(int i=0;i<n;){
+          auto stackVal = stck.try_pop();
+          if(stackVal) {
+            ++i;
+          }
+        }
+      }
+      );
+
+  t1.join();
+  t2.join();
+
+  REQUIRE(stck.was_size()==0);
 }
