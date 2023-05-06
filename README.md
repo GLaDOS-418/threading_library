@@ -1,32 +1,31 @@
 # threading library
 
-a threading library that is:
-- simple 
-- standalone
-- header-only (everything inside `./include`)
-- uses only standard C++
+A simple threading library written in C++20 that is standalone (no third-party) and header-only.
+The intent is to provide a starting point for a concurrent code.
+
+**Copy the `include` directory in your project to use it.**
+
 
 ### features
 
-#### data structures
+#### DATA STRUCTURES
+
+##### [ds::ConcurrentBlockQueue](./include/ds/concurrent_block_queue.h)
+- fine-grained locking, FIFO structure. 
+- with `BLOCK_SIZE=1`, it's essentially a queue based on singly linked-list. default is `BLOCK_SIZE=512`
+- unless necessary, push & pop can work independently without blocking each other.
+- usage :  `ds::ConcurrentBlockQueue<std::string,256> bq;`
+<img src="./resources/images/concurrent_blocked_queue.svg" alt="block_queue" style="max-width: 50%;"/>
 
 ##### [ds::BlockingDeque](./include/ds/blocking_deque.h)
 - synchronised queue implemented using `std::deque`
 - usage: `ds::BlockingDeque<std::string> sq;`
 - **TODO**: make this just a wrapper to provide same functionalities as `std::deque`.
 
-##### [ds::ConcurrentBlockQueue](./include/ds/concurrent_block_queue.h)
-- fine-grained locking, FIFO structure. 
-- with `BLOCK_SIZE=1`, it's essentially a queue based on singly linked-list. default is `BLOCK_SIZE=512`
-- unless necessary, push & pop can work independently without blocking each other.
-- usage :  `ds::ConcurrentBlockQueue<std::,256> bq;`
-<img src="./resources/images/concurrent_blocked_queue.svg" alt="block_queue" style="max-width: 50%;"/>
-
-#### utilities
+#### UTILITIES
 
 ##### [util::FunctionWrapper](./include/util/function_wrapper.h)
 - a type erased function wrapper
-- nothing to do with concurrency but, implemented so why not just use it.
 - usage : `util::FunctionWrapper{ [ ]( ){ /*  do something in this lambda */; } };`
 
 
@@ -39,7 +38,7 @@ a threading library that is:
 
 ### build
 
-- C++ version used: `-std=c++2b`
+- C++ version used: `-std=c++20`
 - compiler: `clang++`
 - build manager: `cmake`
 - package manager: `conan`
@@ -59,3 +58,5 @@ a threading library that is:
 - Add features like concurrent cache, concurrent stack, lock free queue, algorithms like zip etc.
 - Setup environment in a dockerfile.
 - Add github actions.
+- Add benchmark comparisons.
+- Add code examples.

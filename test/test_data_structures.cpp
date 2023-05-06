@@ -7,9 +7,10 @@
 #include <thread>
 
 #include <ds/concurrent_block_queue.h>
+#include <ds/concurrent_hash_map.h>
 #include <ds/blocking_deque.h>
 
-TEST_CASE("block_queue_wait_and_pop", "[ConcurrentQueues]") {
+TEST_CASE("block_queue_wait_and_pop", "[ConcurrentDS]") {
   ds::ConcurrentBlockQueue<std::string,1> bq;
   size_t n = 1'000'000;
   auto t1 = std::thread([&]() {
@@ -34,7 +35,7 @@ TEST_CASE("block_queue_wait_and_pop", "[ConcurrentQueues]") {
   REQUIRE(bq.size() == 0);
 }
 
-TEST_CASE("block_queue_try_pop", "[ConcurrentQueues]") {
+TEST_CASE("block_queue_try_pop", "[ConcurrentDS]") {
   ds::ConcurrentBlockQueue<std::string> bq;
 
   size_t n = 1'000'000;
@@ -64,7 +65,7 @@ TEST_CASE("block_queue_try_pop", "[ConcurrentQueues]") {
   REQUIRE(bq.size() == 0);
 }
 
-TEST_CASE("std_queue_try_pop", "[ConcurrentQueues]") {
+TEST_CASE("std_queue_try_pop", "[ConcurrentDS]") {
   ds::BlockingDeque<std::string> sq;
 
   size_t n = 1'000'000;
@@ -93,4 +94,41 @@ TEST_CASE("std_queue_try_pop", "[ConcurrentQueues]") {
   t2.join();
 
   REQUIRE(sq.size() == 0);
+}
+
+
+TEST_CASE("concurrent_hash_map", "[ConcurrentDS]") {
+  ds::ConcurrentHashMap<std::string, std::string> cmap;
+
+  size_t n = 100'000;
+  auto t1 = std::thread( [&cmap,n]( ){
+    for( auto i=0u; i<n; ++i) { 
+      cmap.insert(std::to_string(i), std::to_string(i));
+    }
+  });
+
+  auto t2 = std::thread( [&cmap,n]( ){
+    for( auto i=0u; i<n; ) { 
+      auto data = cmap.remove(std::to_string(i));
+      if(data)
+        i += 2;
+    }
+  });
+
+  auto t3 = std::thread( [&cmap,n]( ){
+    for( auto i=1u; i<n; ++i) { 
+      auto mapValue = cmap.get(std::to_string(i));
+      auto expectedValue = std::to_string(i);
+
+      if(mapValue){
+        REQUIRE( (*mapValue) == expectedValue);
+      }
+    }
+  });
+
+  t1.join();
+  t2.join();
+  t3.join();
+
+  REQUIRE( cmap.was_size( ) == (n>>1) );
 }
