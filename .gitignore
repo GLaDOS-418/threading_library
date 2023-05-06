@@ -3,5 +3,7 @@ build/*
 .vs/*
 .cache/*
 Testing/*
+CMakeFiles/*
 
 CMakeUserPresets.json
+CMakeCache.txt
