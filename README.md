@@ -12,6 +12,7 @@ The intent is to provide a starting point for a concurrent code.
     - [concurrent hashmap](#concurrent-hashmap)
     - [concurrent block queue](#concurrent-block-queue)
     - [synchronized queue](#synchronized-queue)
+    - [concurrent stack](#concurrent-stack)
 - [utilities](#utilities)
     - [function wrapper](#function-wrapper)
     - [thread-pool](#thread-pool)
@@ -35,6 +36,12 @@ The intent is to provide a starting point for a concurrent code.
 - coarse-grained synchronized FIFO-queue, implemented using `std::deque`
 - blocks the whole structure for both push & pop.
 - usage: `ds::SynchronizedQueue<std::string> sq;`
+
+##### [ds::ConcurrentStack](./include/ds/concurrent_stack.h) <a name="concurrent-stack"/>
+- lock-based bounded( `container: std::vector` ) and unbounded( `container:std::deque` ) LIFO structure.
+- since, only one point of access, no option other than locking the whole structure is available.
+- usage [bounded stack]   : `ds::ConcurrentStack<value_type,bound_size>`
+- usage [unbounded stack] : `ds::ConcurrentStack<value_type>`
 
 #### UTILITIES
 
@@ -69,7 +76,7 @@ The intent is to provide a starting point for a concurrent code.
 
 
 ### todo
-- Add features like concurrent cache, concurrent stack, lock free queue, algorithms like zip etc.
+- Add features like lock free queue, algorithms like zip etc.
 - Setup environment in a dockerfile.
 - Add github actions.
 - Add benchmark comparisons.
