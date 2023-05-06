@@ -155,7 +155,7 @@ namespace ds {
 
     std::optional<T> try_pop( ) {
       std::lock_guard<std::mutex> guard(m_head.lock);
-      if( not empty() ){
+      if( not was_empty() ){
         auto data = m_head.pop_data( );
         --m_size;
         return {std::move(data)};
@@ -166,9 +166,9 @@ namespace ds {
 
     std::optional<T> wait_and_pop( ) {
       std::unique_lock<std::mutex> guard(m_head.lock);
-      m_queue_signal.wait(guard, [this]( ){ return m_clear_mode_enabled || not empty( ); } );
+      m_queue_signal.wait(guard, [this]( ){ return m_clear_mode_enabled || not was_empty( ); } );
 
-      if(m_clear_mode_enabled && empty( ))
+      if(m_clear_mode_enabled && was_empty( ))
         return { };
 
       auto data{m_head.pop_data( )};
@@ -182,11 +182,11 @@ namespace ds {
       m_queue_signal.notify_all( );
     }
 
-    bool empty( ){
-      return m_size == 0;
+    bool was_empty( ) const {
+      return !m_size;
     }
 
-    size_t size( ) {
+    size_t was_size( ) const {
       return m_size;
     }
 

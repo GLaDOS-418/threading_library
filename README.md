@@ -11,16 +11,16 @@ The intent is to provide a starting point for a concurrent code.
 #### DATA STRUCTURES
 
 ##### [ds::ConcurrentBlockQueue](./include/ds/concurrent_block_queue.h)
-- fine-grained locking, FIFO structure. 
+- fine-grained locking, FIFO-queue. 
 - with `BLOCK_SIZE=1`, it's essentially a queue based on singly linked-list. default is `BLOCK_SIZE=512`
 - unless necessary, push & pop can work independently without blocking each other.
 - usage :  `ds::ConcurrentBlockQueue<std::string,256> bq;`
 <img src="./resources/images/concurrent_blocked_queue.svg" alt="block_queue" style="max-width: 50%;"/>
 
-##### [ds::BlockingDeque](./include/ds/blocking_deque.h)
-- synchronised queue implemented using `std::deque`
-- usage: `ds::BlockingDeque<std::string> sq;`
-- **TODO**: make this just a wrapper to provide same functionalities as `std::deque`.
+##### [ds::SynchronizedQueue](./include/ds/synchronized_queue.h)
+- coarse-grained synchronized FIFO-queue, implemented using `std::deque`
+- blocks the whole structure for both push & pop.
+- usage: `ds::SynchronizedQueue<std::string> sq;`
 
 #### UTILITIES
 

@@ -8,7 +8,7 @@
 
 #include <ds/concurrent_block_queue.h>
 #include <ds/concurrent_hash_map.h>
-#include <ds/blocking_deque.h>
+#include <ds/synchronized_queue.h>
 
 TEST_CASE("block_queue_wait_and_pop", "[ConcurrentDS]") {
   ds::ConcurrentBlockQueue<std::string,1> bq;
@@ -32,7 +32,7 @@ TEST_CASE("block_queue_wait_and_pop", "[ConcurrentDS]") {
   t1.join();
   t2.join();
 
-  REQUIRE(bq.size() == 0);
+  REQUIRE(bq.was_size() == 0);
 }
 
 TEST_CASE("block_queue_try_pop", "[ConcurrentDS]") {
@@ -62,11 +62,11 @@ TEST_CASE("block_queue_try_pop", "[ConcurrentDS]") {
   t1.join();
   t2.join();
 
-  REQUIRE(bq.size() == 0);
+  REQUIRE(bq.was_size() == 0);
 }
 
 TEST_CASE("std_queue_try_pop", "[ConcurrentDS]") {
-  ds::BlockingDeque<std::string> sq;
+  ds::SynchronizedQueue<std::string> sq;
 
   size_t n = 1'000'000;
 
@@ -93,7 +93,7 @@ TEST_CASE("std_queue_try_pop", "[ConcurrentDS]") {
   t1.join();
   t2.join();
 
-  REQUIRE(sq.size() == 0);
+  REQUIRE(sq.was_size() == 0);
 }
 
 

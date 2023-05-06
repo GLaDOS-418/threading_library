@@ -1,5 +1,5 @@
-#ifndef CONCURRENT_DEQUE_H
-#define CONCURRENT_DEQUE_H
+#ifndef SYNCHRONIZED_QUEUE_H 
+#define SYNCHRONIZED_QUEUE_H
 
 #include <condition_variable>
 #include <cstddef>
@@ -15,7 +15,7 @@ namespace ds {
 
   template <typename Data>
     requires(std::copyable<Data> || std::movable<Data>)
-  class BlockingDeque {
+  class SynchronizedQueue{
     std::deque<Data> data;
     mutable std::mutex lock;
     std::condition_variable conditional;
@@ -48,12 +48,12 @@ namespace ds {
       conditional.notify_one();
     }
 
-    size_t size() const {
+    size_t was_size() const {
       std::lock_guard<std::mutex> guard(lock);
       return data.size();
     }
 
-    bool empty() const {
+    bool was_empty() const {
       std::lock_guard<std::mutex> guard(lock);
       return data.empty();
     }
@@ -61,4 +61,4 @@ namespace ds {
 
 } // namespace ds
 
-#endif // CONCURRENT_DEQUE_H
+#endif // SYNCHRONIZED_QUEUE_H
