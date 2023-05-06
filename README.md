@@ -10,6 +10,12 @@ The intent is to provide a starting point for a concurrent code.
 
 #### DATA STRUCTURES
 
+##### [ds::ConcurrentHashMap](./include/ds/concurrent_hash_map.h)
+- bucket-level locking based, concurrent hash map.
+- number of buckets can be adjusted with a template parameter, default is `BUCKETS=1031`.
+- below example creates a hash map with (key=std::string, val=double, buckets=513)
+- usage : `ds::ConcurrentHashMap<std::string,double,513>`
+
 ##### [ds::ConcurrentBlockQueue](./include/ds/concurrent_block_queue.h)
 - fine-grained locking, FIFO-queue. 
 - with `BLOCK_SIZE=1`, it's essentially a queue based on singly linked-list. default is `BLOCK_SIZE=512`
