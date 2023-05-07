@@ -53,6 +53,7 @@ The intent is to provide a starting point for a concurrent code.
 ##### [util::ThreadPool](./include/util/thread_pool.h) <a name="thread-pool"/>
 - a thread pool with customisable number of worker threads.
 - default pool size is determined by `std::thread::hardware_concurrency( )`.
+- worker threads busy-waits for work.
 - during task submission, a `std::future<T>` is returned to make the results available later.
 - usage : `util::ThreadPool tp(20);`
 

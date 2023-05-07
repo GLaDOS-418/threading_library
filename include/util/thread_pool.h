@@ -2,6 +2,7 @@
 #define THREAD_POOL_H
 
 #include <atomic>
+#include <cstddef>
 #include <functional>
 #include <future>
 #include <thread>
@@ -24,9 +25,17 @@ namespace util {
 
     void worker_method() {
       while (!done) {
-        auto task = tasks.wait_and_pop();
+        // wait_and_pop requires interruptible conditional variable
+        // to wake the threads up in case a join( ) request received
+        // when there are no tasks available
+        auto task = tasks.try_pop();
+
         if(task)
           (*task)( );
+
+        // irrespective of availability of tasks,
+        // give a chance to other threads
+        std::this_thread::yield();
       }
     }
 
@@ -35,11 +44,6 @@ namespace util {
     }
 
     public:
-
-    void join( ){
-      done = true;
-      tasks.enable_clear_mode();
-    }
 
     ThreadPool(const size_t total_workers = compute_concurrency( )) : done(false) { 
       try{ 
@@ -62,11 +66,20 @@ namespace util {
       join();
     }
 
+    void join( ){
+      done = true;
+    }
+
+    inline size_t size( ) const {
+      return workers.size();
+    }
+
     template<typename Fn, typename... Args>
     std::future<std::invoke_result_t<Fn, Args...>> submit( Fn callable, Args&&... args){
       using return_t = std::invoke_result_t<Fn, Args...>;
       std::packaged_task<return_t( )> task(std::bind(std::forward<Fn>(callable), std::forward<Args>(args)...));
 
+      // caller waits on this future
       auto result{task.get_future( )};
       tasks.push(std::move(task));
 
