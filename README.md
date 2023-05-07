@@ -3,7 +3,7 @@
 A simple threading library written in C++20 that is standalone (no third-party) and header-only.
 The intent is to provide a starting point for a concurrent code.
 
-**Copy the `include` directory in your project to use it.**
+***Copy the `include` directory in your project to use it.***
 
 
 ### features
@@ -74,11 +74,12 @@ The intent is to provide a starting point for a concurrent code.
 ### test
 
 1. run `$ make test`
+2. run `$ make testout` to re-run failed tests w/ output.
 
 
 ### todo
-- Add features like lock free queue, algorithms like zip etc.
-- Setup environment in a dockerfile.
-- Add github actions.
-- Add benchmark comparisons.
-- Improve documentation e.g. add code examples etc.
+- implement lock free data structures stack, queue & cache, algorithms like zip, utilities like guarded resource, spin lock, seqlock, ticket lock.
+- setup environment in a dockerfile.
+- add github actions.
+- add benchmark comparisons.
+- improve documentation e.g. add code examples etc.
