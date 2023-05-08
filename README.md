@@ -85,8 +85,11 @@ The intent is to provide a starting point for a concurrent code.
 
 
 ### todo
-- implement lock free data structures stack, queue & cache, algorithms like zip, utilities like guarded resource, spin lock, seqlock, ticket lock.
-- setup environment in a dockerfile.
-- add github actions.
-- add benchmark comparisons.
-- improve documentation e.g. add code examples etc.
+- [ ] lock free data structures stack, queue & cache.
+- [ ] concurrent algorithms like zip.
+- [ ] utilities like guarded resource, spin lock, seqlock, ticket lock.
+- [ ] homogenize container interface using concepts.
+- [ ] setup environment in a dockerfile.
+- [ ] add github actions.
+- [ ] add benchmark.
+- [ ] improve documentation e.g. add code examples etc.
