@@ -1,6 +1,7 @@
 #ifndef THREAD_POOL_H
 #define THREAD_POOL_H
 
+#include "util/async_result.h"
 #include <atomic>
 #include <cstddef>
 #include <functional>
@@ -75,12 +76,12 @@ namespace util {
     }
 
     template<typename Fn, typename... Args>
-    std::future<std::invoke_result_t<Fn, Args...>> submit( Fn callable, Args&&... args){
+    auto submit( Fn callable, Args&&... args){
       using return_t = std::invoke_result_t<Fn, Args...>;
       std::packaged_task<return_t( )> task(std::bind(std::forward<Fn>(callable), std::forward<Args>(args)...));
 
       // caller waits on this future
-      auto result{task.get_future( )};
+      AsyncResult<return_t> result{task.get_future( )};
       tasks.push(std::move(task));
 
       return result;

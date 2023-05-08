@@ -16,6 +16,7 @@ The intent is to provide a starting point for a concurrent code.
 - [utilities](#utilities)
     - [function wrapper](#function-wrapper)
     - [thread-pool](#thread-pool)
+    - [async result](#async-result)
 
 #### DATA STRUCTURES <a name="data-structures"/>
 
@@ -47,15 +48,21 @@ The intent is to provide a starting point for a concurrent code.
 
 ##### [util::FunctionWrapper](./include/util/function_wrapper.h) <a name="function-wrapper"/>
 - a type erased function wrapper
-- usage : `util::FunctionWrapper{ [ ]( ){ /*  do something in this lambda */; } };`
+- usage : `util::FunctionWrapper{ callable };`
+
+##### [util::AsyncResult](./include/util/async_result.h) <a name="async-result"/>
+- a wrapper over `std::future` that allows chaining of callbacks once the result is available.
+- usage : `util::AsyncResult<callback_return_type> result;`
+- usage [chaining] : `auto final_result = result.then( f ).then( g ).then( h ).get( );`
 
 
 ##### [util::ThreadPool](./include/util/thread_pool.h) <a name="thread-pool"/>
 - a thread pool with customisable number of worker threads.
 - default pool size is determined by `std::thread::hardware_concurrency( )`.
 - worker threads busy-waits for work.
-- during task submission, a `std::future<T>` is returned to make the results available later.
+- task submission returns a `util::AsyncResult<callback_return_t>` object.
 - usage : `util::ThreadPool tp(20);`
+- usage [submit task] : `auto result = tp.submit( callable );`
 
 
 ### build
