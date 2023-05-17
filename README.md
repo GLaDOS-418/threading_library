@@ -15,16 +15,17 @@ The intent is to provide a starting point for a concurrent code.
     - [concurrent stack](#concurrent-stack)
 - [utilities](#utilities)
     - [function wrapper](#function-wrapper)
-    - [thread-pool](#thread-pool)
     - [async result](#async-result)
+    - [threadpool](#thread-pool)
+    - [spin lock](#spin-lock)
 
 #### DATA STRUCTURES <a name="data-structures"/>
 
 ##### [ds::ConcurrentHashMap](./include/ds/concurrent_hash_map.h) <a name="concurrent-hashmap"/>
 - bucket-level locking based, concurrent hash map.
 - number of buckets can be adjusted with a template parameter, default is `BUCKETS=1031`.
-- below example creates a hash map with (key=std::string, val=double, buckets=513)
-- usage : `ds::ConcurrentHashMap<std::string,double,513>`
+- below example creates a hash map with (key=std::string, val=double, buckets=517)
+- usage : `ds::ConcurrentHashMap<std::string,double,517>`
 
 ##### [ds::ConcurrentBlockQueue](./include/ds/concurrent_block_queue.h) <a name="concurrent-block-queue"/>
 - fine-grained locking, FIFO-queue. 
@@ -63,6 +64,11 @@ The intent is to provide a starting point for a concurrent code.
 - task submission returns a `util::AsyncResult<callback_return_t>` object.
 - usage : `util::ThreadPool tp(20);`
 - usage [submit task] : `auto result = tp.submit( callable );`
+
+##### [util::SpinLock](./include/util/spin_lock.h) <a name="spin-lock"/>
+- a busy-waiting exclusive lock.
+- compatible interface with `std::lock_guard<T>` & `std::unique_lock<T>`.
+- usage : `SpinLock lock;  std::lock_guard<SpinLock> guard(lock);`
 
 
 ### build
