@@ -29,10 +29,10 @@ class FunctionWrapper {
    *  functions with arguments
    * */
   
-  //template<typename F, typename... Args>
-  //FunctionWrapper( F&& callable, Args&&... args) : 
-  //  pImpl( std::make_unique<CallableImpl<F>>(std::move(std::bind(std::forward<F>(callable), std::forward<Args>(args)...))) )
-  //{ };
+  template<typename F, typename... Args>
+  FunctionWrapper( F&& callable, Args&&... args) : 
+    pImpl( std::make_unique<CallableImpl<F>>(std::move(std::bind(std::forward<F>(callable), std::forward<Args>(args)...))) )
+  { };
 
   template<typename F>
   FunctionWrapper( F&& callable) : 

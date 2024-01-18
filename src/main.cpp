@@ -1,8 +1,7 @@
 #include <bits/stdc++.h>
 
-#include <ds/blocking_deque.h>
-#include <ds/concurrent_block_queue.h>
-#include <util/thread_pool.h>
+#include "ds/concurrent_block_queue.h"
+#include "util/thread_pool.h"
 
 using namespace std;
 
