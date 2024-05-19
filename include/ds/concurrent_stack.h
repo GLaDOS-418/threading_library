@@ -3,80 +3,74 @@
 
 #include <condition_variable>
 #include <cstddef>
+#include <deque>
 #include <mutex>
+#include <optional>
 #include <type_traits>
 #include <vector>
-#include <deque>
-#include <optional>
-
 
 namespace ds {
 
-  template<typename Data, size_t ContainerSize = 0>
-  class ConcurrentStack {
+template <typename Data, size_t ContainerSize = 0>
+class ConcurrentStack {
+  using unbounded_container = std::deque<Data>;
+  using bounded_container = std::vector<Data>;
 
-    using unbounded_container = std::deque<Data>;
-    using   bounded_container = std::vector<Data>;
+  std::
+      conditional_t<(ContainerSize > 0), bounded_container, unbounded_container>
+          m_stack;
+  std::atomic<size_t> m_size;
 
-    std::conditional_t<(ContainerSize>0), bounded_container, unbounded_container> m_stack;
-    std::atomic<size_t> m_size;
+  // synchronization primitives
+  std::mutex m_lock;
+  std::condition_variable m_sync;
 
-    // synchronization primitives
-    std::mutex m_lock;
-    std::condition_variable m_sync;
+ public:
+  std::optional<Data> try_pop() {
+    std::lock_guard<std::mutex> guard(m_lock);
+    if (was_empty())
+      return {};
 
-    public:
+    auto retval = std::move(m_stack.back());
 
-    std::optional<Data> try_pop( ) {
-      std::lock_guard<std::mutex> guard(m_lock);
-      if( was_empty() )
-        return { };
+    m_stack.pop_back();
+    --m_size;
 
-      auto retval = std::move( m_stack.back( ) );
+    return {std::move(retval)};
+  }
 
-      m_stack.pop_back( );
-      --m_size;
+  Data wait_and_pop() {
+    std::unique_lock<std::mutex> guard(m_lock);
+    m_sync.wait(guard, [this]() { return not was_empty(); });
 
-      return { std::move(retval) };
+    auto retval = std::move(m_stack.back());
+
+    --m_size;
+    m_stack.pop_back();
+
+    return retval;
+  }
+
+  bool push(Data value) {
+    std::lock_guard<std::mutex> guard(m_lock);
+
+    if constexpr (ContainerSize > 0) {
+      if (m_size == ContainerSize)  // container full. can't push new data
+        return false;
     }
 
-    Data wait_and_pop( ){
-      std::unique_lock<std::mutex> guard(m_lock);
-      m_sync.wait(guard, [this]( ){ return not was_empty( ); });
+    m_stack.emplace_back(std::move(value));
+    ++m_size;
+    m_sync.notify_one();
 
-      auto retval = std::move( m_stack.back( ) );
+    return true;  // success
+  }
 
-      --m_size;
-      m_stack.pop_back( );
+  bool was_empty() const { return !m_size; }
 
-      return retval;
-    }
+  size_t was_size() const { return m_size; }
+};
 
-    bool push( Data value ) {
-      std::lock_guard<std::mutex> guard(m_lock);
+}  // namespace ds
 
-      if constexpr ( ContainerSize > 0 ){
-        if ( m_size == ContainerSize ) // container full. can't push new data
-          return false;
-      }
-
-      m_stack.emplace_back( std::move(value) );
-      ++m_size;
-      m_sync.notify_one();
-
-      return true; // success
-    }
-
-    bool was_empty( ) const {
-      return !m_size;
-    }
-
-    size_t was_size( ) const {
-      return m_size;
-    }
-
-  };
-
-} // ds
-
-#endif // CONCURRENT_STACK_H
+#endif  // CONCURRENT_STACK_H

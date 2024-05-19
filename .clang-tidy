@@ -1,0 +1,35 @@
+---
+Checks:          "
+  cppcoreguidelines-*,
+  bugprone-*,
+  abseil-*,
+  google-*,
+  modernize-*,
+  performance-*,
+  readability-*
+  "
+WarningsAsErrors: ''
+HeaderFileExtensions:
+  - ''
+  - h
+  - hh
+  - hpp
+  - hxx
+  - tpp
+  - cuh
+ImplementationFileExtensions:
+  - c
+  - cc
+  - cpp
+  - cxx
+  - cu
+HeaderFilterRegex: ''
+SystemHeaders:   false
+IgnoreMacros: true
+CheckOptions:
+  - key: readability-identifier-length.IgnoredVariableNames
+    value: 'e|i|j|k|n|s|x|y|z'
+  - key: readability-identifier-length.IgnoredParameterNames
+    value: 'e|i|j|k|n|s|x|y|z'
+...
+

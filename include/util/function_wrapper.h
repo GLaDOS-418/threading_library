@@ -1,8 +1,8 @@
 #ifndef FUNCTION_WRAPPER_H
 #define FUNCTION_WRAPPER_H
 
-#include <memory>
 #include <functional>
+#include <memory>
 #include <type_traits>
 
 class FunctionWrapper {
@@ -11,51 +11,46 @@ class FunctionWrapper {
     virtual ~ICallable() = default;
   };
 
-  template <typename T> 
+  template <typename T>
   struct CallableImpl : ICallable {
     explicit CallableImpl(T&& f) : callable(std::move(f)) {}
     inline void call() override { callable(); }
 
-    private:
+   private:
     T callable;
   };
 
   std::unique_ptr<ICallable> pImpl;
 
-  public:
-
+ public:
   /*
-   *  perhaps, this implementation can act as type-erased wrapper for 
+   *  perhaps, this implementation can act as type-erased wrapper for
    *  functions with arguments
    * */
-  
-  template<typename F, typename... Args>
-  FunctionWrapper( F&& callable, Args&&... args) : 
-    pImpl( std::make_unique<CallableImpl<F>>(std::move(std::bind(std::forward<F>(callable), std::forward<Args>(args)...))) )
-  { };
 
-  template<typename F>
-  FunctionWrapper( F&& callable) : 
-    pImpl( std::make_unique<CallableImpl<F>>(std::move(callable) ) )
-  { };
+  template <typename F, typename... Args>
+  FunctionWrapper(F&& callable, Args&&... args)
+      : pImpl(std::make_unique<CallableImpl<F>>(
+            std::move(std::bind(std::forward<F>(callable),
+                                std::forward<Args>(args)...)))){};
+
+  template <typename F>
+  FunctionWrapper(F&& callable)
+      : pImpl(std::make_unique<CallableImpl<F>>(std::move(callable))){};
 
   // can't be 'default'-ed due to collision with argument-based ctor above
-  FunctionWrapper( FunctionWrapper&& other ) : pImpl(std::move(other.pImpl)){ }
-  FunctionWrapper& operator=( FunctionWrapper&& other ) {
+  FunctionWrapper(FunctionWrapper&& other) : pImpl(std::move(other.pImpl)) {}
+  FunctionWrapper& operator=(FunctionWrapper&& other) {
     pImpl.swap(other.pImpl);
     return *this;
   }
 
-  FunctionWrapper( const FunctionWrapper& ) = delete;
-  FunctionWrapper& operator=( const FunctionWrapper& ) = delete;
+  FunctionWrapper(const FunctionWrapper&) = delete;
+  FunctionWrapper& operator=(const FunctionWrapper&) = delete;
 
+  ~FunctionWrapper() = default;
 
-  ~FunctionWrapper( ) = default;
-
-  void operator( ) ( ) {
-    pImpl->call();
-  }
-
+  void operator()() { pImpl->call(); }
 };
 
-#endif // FUNCTION_WRAPPER_H
+#endif  // FUNCTION_WRAPPER_H

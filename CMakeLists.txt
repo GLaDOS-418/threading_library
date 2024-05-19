@@ -38,16 +38,27 @@ endif()
 
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 
+# clang-tidy setup
+find_program(CLANGTIDY clang-tidy)
+if(CLANGTIDY)
+  set(CMAKE_CXX_CLANG_TIDY ${CLANGTIDY})
+else()
+  message(SEND_ERROR "clang-tidy requested but executable not found.")
+endif()
+
 # interface means a header only library
 add_library( ${PROJECT_NAME}-lib INTERFACE )
 
 # ADD INCLUDE FOLDERS
 target_include_directories( ${PROJECT_NAME}-lib INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include )
 
+# COLLECT ALL SOURCE FILES
+file(GLOB_RECURSE ALL_SOURCE_FILES
+    ${CMAKE_SOURCE_DIR}/src/*.cpp
+)
+
 # ADD EXECUTABLE
-add_executable( ${PROJECT_NAME} 
-  src/main.cpp
-  )
+add_executable( ${PROJECT_NAME} ${ALL_SOURCE_FILES} )
 
 target_link_libraries( ${PROJECT_NAME} PRIVATE ${PROJECT_NAME}-lib )
 

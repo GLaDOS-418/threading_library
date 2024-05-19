@@ -1,0 +1,13 @@
+CompileFlags:                     # Tweak the parse settings
+  CompilationDatabase: build/     # Search build/ directory for compile_commands.json
+  Add: [-std=c++2b,-xc++, -Wall]  # treat all files as C++, enable more warnings
+  Compiler: clang++               # Change argv[0] of compile flags to `clang++`
+InlayHints:
+  BlockEnd: No
+  Designators: Yes
+  Enabled: Yes
+  ParameterNames: Yes
+  DeducedTypes: Yes
+  TypeNameLimit: 24
+Diagnostics:
+  UnusedIncludes: Strict
