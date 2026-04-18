@@ -50,11 +50,11 @@ endif()
 add_library( ${PROJECT_NAME}-lib INTERFACE )
 
 # ADD INCLUDE FOLDERS
-target_include_directories( ${PROJECT_NAME}-lib INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include )
+target_include_directories( ${PROJECT_NAME}-lib INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/Includes )
 
 # COLLECT ALL SOURCE FILES
 file(GLOB_RECURSE ALL_SOURCE_FILES
-    ${CMAKE_SOURCE_DIR}/src/*.cpp
+    ${CMAKE_SOURCE_DIR}/Src/*.cpp
 )
 
 # ADD EXECUTABLE
