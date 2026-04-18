@@ -1,14 +1,116 @@
 ---
-Checks:          "
+# NOTE there must be no spaces before the '-', so put the comma last.
+# The check bugprone-unchecked-optional-access is also turned off atm
+# because it causes clang-tidy to hang randomly. The tracking issue
+# can be found at https://github.com/llvm/llvm-project/issues/69369.
+
+Checks: >
   cppcoreguidelines-*,
+
   bugprone-*,
+  -bugprone-unchecked-optional-access,
+
   abseil-*,
+  -abseil-string-find-startswith
+
   google-*,
-  modernize-*,
+
   performance-*,
-  readability-*
-  "
-WarningsAsErrors: ''
+
+  misc-*,
+
+  fuchsia-default-arguments-calls,
+  fuchsia-default-arguments-declarations,
+  -fuchsia-overloaded-operator,
+  fuchsia-statically-constructed-objects,
+  fuchsia-temporary-objects,
+  fuchsia-trailing-return,
+
+  modernize-avoid-bind,
+  modernize-avoid-c-arrays,
+  modernize-deprecated-headers,
+  modernize-deprecated-ios-base-aliases,
+  modernize-make-shared,
+  modernize-make-unique,
+  modernize-min-max-use-initializer-list,
+  modernize-redundant-void-arg,
+  modernize-return-braced-init-list,
+  modernize-type-traits,
+  modernize-use-bool-literals,
+  modernize-use-default-member-init,
+  modernize-use-nullptr,
+  modernize-use-override,
+  modernize-use-transparent-functors,
+  modernize-use-using,
+
+  readability-avoid-const-params-in-decls,
+  readability-avoid-nested-conditional-operator,
+  readability-avoid-return-with-void-value,
+  readability-avoid-unconditional-preprocessor-if,
+  readability-braces-around-statements,
+  readability-const-return-type,
+  readability-container-data-pointer,
+  readability-container-size-empty,
+  readability-delete-null-pointer,
+  readability-enum-initial-value,
+  readability-identifier-naming,
+  readability-implicit-bool-conversion,
+  readability-inconsistent-declaration-parameter-name,
+  readability-inconsistent-ifelse-braces,
+  readability-isolate-declaration,
+  readability-magic-numbers,
+  readability-make-member-function-const,
+  readability-math-missing-parentheses,
+  readability-misleading-indentation,
+  readability-named-parameter,
+  readability-non-const-parameter,
+  readability-qualified-auto,
+  readability-redundant-access-specifiers,
+  readability-redundant-casting,
+  readability-redundant-control-flow,
+  readability-redundant-declaration,
+  readability-redundant-function-ptr-dereference,
+  readability-redundant-inline-specifier,
+  readability-redundant-member-init,
+  readability-redundant-parentheses,
+  readability-redundant-qualified-alias,
+  readability-redundant-smartptr-get,
+  readability-redundant-string-cstr,
+  readability-redundant-string-init,
+  readability-redundant-typename,
+  readability-reference-to-constructed-temporary,
+  readability-simplify-boolean-expr,
+  readability-simplify-subscript-expr,
+  readability-static-accessed-through-instance,
+  readability-static-definition-in-anonymous-namespace,
+  readability-string-compare,
+  readability-trailing-comma,
+  readability-uniqueptr-delete-release,
+  readability-use-concise-preprocessor-directives
+
+CheckOptions:
+   - { key: readability-redundant-inline-specifier.StrictMode,  value: 'true'      }
+   - { key: readability-redundant-qualified-alias.OnlyNamespaceScope , value: 'true' }
+   - { key: readability-identifier-length.IgnoredVariableNames, value: 'e|i|j|k'   }
+   - { key: readability-identifier-naming.AbstractClassCase,    value: 'CamelCase' }
+   - { key: readability-identifier-naming.AbstractClassPrefix,  value: 'I' }
+   - { key: readability-identifier-naming.ClassMethodCase,      value: 'CamelCase' }
+   - { key: readability-identifier-naming.ClassCase,            value: 'CamelCase' }
+   - { key: readability-identifier-naming.EnumCase,             value: 'CamelCase' }
+   - { key: readability-identifier-naming.EnumConstantCase,     value: 'CamelCase' }
+   - { key: readability-identifier-naming.FunctionCase,         value: 'CamelCase' }
+   - { key: readability-identifier-naming.StructCase,           value: 'CamelCase' }
+   - { key: readability-identifier-naming.TypeAliasCase,        value: 'CamelCase' }
+   - { key: readability-identifier-naming.PrivateMemberCase,    value: 'camelBack' }
+   - { key: readability-identifier-naming.PrivateMemberPrefix,  value: '_'         }
+   - { key: readability-identifier-naming.ProtectedMemberCase,  value: 'camelBack' }
+   - { key: readability-identifier-naming.ProtectedMemberPrefix,value: '_'         }
+   - { key: readability-identifier-naming.ParameterCase,        value: 'camelBack' }
+   - { key: readability-identifier-naming.LocalVariableCase,    value: 'camelBack' }
+   - { key: readability-identifier-naming.TemplateParameterCase,value: 'CamelCase' }
+   - { key: readability-identifier-naming.NamespaceCase, value: 'CamelCase' }
+   - { key: readability-identifier-naming.TemplateParameterPrefix, value: 'T' }
+
 HeaderFileExtensions:
   - ''
   - h
@@ -17,19 +119,13 @@ HeaderFileExtensions:
   - hxx
   - tpp
   - cuh
+
 ImplementationFileExtensions:
   - c
   - cc
   - cpp
   - cxx
   - cu
+
 HeaderFilterRegex: ''
 SystemHeaders:   false
-IgnoreMacros: true
-CheckOptions:
-  - key: readability-identifier-length.IgnoredVariableNames
-    value: 'e|i|j|k|n|s|x|y|z'
-  - key: readability-identifier-length.IgnoredParameterNames
-    value: 'e|i|j|k|n|s|x|y|z'
-...
-
