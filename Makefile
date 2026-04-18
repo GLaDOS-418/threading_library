@@ -1,7 +1,9 @@
 .PHONY: deps configure fix-header-guards build test examples iwyu-deps iwyu-configure iwyu iwyu-fix docs docs-serve format-cmake clean
 
 BUILD_DIR=_build/debug
+BUILD_GENERATORS_DIR=$(BUILD_DIR)/build/Debug/generators
 IWYU_BUILD_DIR=_build/iwyu
+IWYU_GENERATORS_DIR=$(IWYU_BUILD_DIR)/build/Debug/generators
 DOCS_BUILD_DIR=_build/docs
 DOCS_HTML_DIR=$(DOCS_BUILD_DIR)/html
 DOCS_PORT ?= 8000
@@ -22,7 +24,7 @@ deps:
 configure: deps
 	cmake -S . -B $(BUILD_DIR) \
 		-DCMAKE_BUILD_TYPE=Debug \
-		-DCMAKE_TOOLCHAIN_FILE=$(CURDIR)/$(BUILD_DIR)/conan_toolchain.cmake
+		-DCMAKE_TOOLCHAIN_FILE=$(CURDIR)/$(BUILD_GENERATORS_DIR)/conan_toolchain.cmake
 	ln -sf $(BUILD_DIR)/compile_commands.json compile_commands.json
 
 # Normalize header guards before builds so include guards stay consistent.
@@ -80,7 +82,7 @@ iwyu-deps:
 iwyu-configure: iwyu-deps
 	cmake -S . -B $(IWYU_BUILD_DIR) \
 		-DCMAKE_BUILD_TYPE=Debug \
-		-DCMAKE_TOOLCHAIN_FILE=$(CURDIR)/$(IWYU_BUILD_DIR)/conan_toolchain.cmake \
+		-DCMAKE_TOOLCHAIN_FILE=$(CURDIR)/$(IWYU_GENERATORS_DIR)/conan_toolchain.cmake \
 		-DENABLE_IWYU=ON \
 		-DPROJECT_IWYU_EXECUTABLE="$(IWYU_EXECUTABLE)"
 

@@ -47,7 +47,7 @@ conan install . --output-folder=_build/debug --build=missing \
 
 cmake -S . -B _build/debug \
   -DCMAKE_BUILD_TYPE=Debug \
-  -DCMAKE_TOOLCHAIN_FILE=$(pwd)/_build/debug/conan_toolchain.cmake
+  -DCMAKE_TOOLCHAIN_FILE=$(pwd)/_build/debug/build/Debug/generators/conan_toolchain.cmake
 ```
 
 Examples of enabling CMake options directly from the terminal:
@@ -55,14 +55,14 @@ Examples of enabling CMake options directly from the terminal:
 ```sh
 cmake -S . -B _build/debug \
   -DCMAKE_BUILD_TYPE=Debug \
-  -DCMAKE_TOOLCHAIN_FILE=$(pwd)/_build/debug/conan_toolchain.cmake \
+  -DCMAKE_TOOLCHAIN_FILE=$(pwd)/_build/debug/build/Debug/generators/conan_toolchain.cmake \
   -DENABLE_IWYU=ON
 ```
 
 ```sh
 cmake -S . -B _build/debug \
   -DCMAKE_BUILD_TYPE=Debug \
-  -DCMAKE_TOOLCHAIN_FILE=$(pwd)/_build/debug/conan_toolchain.cmake \
+  -DCMAKE_TOOLCHAIN_FILE=$(pwd)/_build/debug/build/Debug/generators/conan_toolchain.cmake \
   -DENABLE_CLANG_TIDY=ON \
   -DENABLE_HARDENING=ON
 ```
@@ -70,7 +70,7 @@ cmake -S . -B _build/debug \
 ```sh
 cmake -S . -B _build/debug \
   -DCMAKE_BUILD_TYPE=Debug \
-  -DCMAKE_TOOLCHAIN_FILE=$(pwd)/_build/debug/conan_toolchain.cmake \
+  -DCMAKE_TOOLCHAIN_FILE=$(pwd)/_build/debug/build/Debug/generators/conan_toolchain.cmake \
   -DENABLE_ASAN=ON
 ```
 
