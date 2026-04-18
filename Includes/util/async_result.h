@@ -6,54 +6,69 @@
 #include <future>
 #include <type_traits>
 
-namespace util {
+namespace util
+{
 
-template <typename ResultT>
-  requires(std::copyable<ResultT> || std::movable<ResultT>)
-class AsyncResult {
-  std::future<ResultT> m_waitable;
+    template<typename ResultT>
+        requires(std::copyable<ResultT> || std::movable<ResultT>)
+    class AsyncResult
+    {
+        std::future<ResultT> m_waitable;
 
- public:
-  AsyncResult(auto&& waitable) : m_waitable{std::move(waitable)} {}
-  AsyncResult(const auto& waitable) : m_waitable{waitable} {}
+    public:
+        AsyncResult(auto&& waitable)
+            : m_waitable{std::move(waitable)}
+        {
+        }
 
-  AsyncResult() = default;
-  ~AsyncResult() = default;
+        AsyncResult(const auto& waitable)
+            : m_waitable{waitable}
+        {
+        }
 
-  AsyncResult(const AsyncResult&) = delete;
-  AsyncResult& operator=(const AsyncResult&) = delete;
+        AsyncResult() = default;
+        ~AsyncResult() = default;
 
-  AsyncResult(AsyncResult&&) = default;
-  AsyncResult& operator=(AsyncResult&&) = default;
+        AsyncResult(const AsyncResult&) = delete;
+        AsyncResult& operator=(const AsyncResult&) = delete;
 
-  template <typename Fn,
-            std::enable_if_t<!std::is_same_v<void, ResultT>, int> = 0>
-    requires std::movable<Fn>
-  inline auto then(Fn&& callback) {
-    using return_t = std::invoke_result_t<Fn, ResultT>;
+        AsyncResult(AsyncResult&&) = default;
+        AsyncResult& operator=(AsyncResult&&) = default;
 
-    std::promise<return_t> prms;
-    prms.set_value(std::move(callback(m_waitable.get())));
+        template<typename Fn, std::enable_if_t<!std::is_same_v<void, ResultT>, int> = 0>
+            requires std::movable<Fn>
+        inline auto then(Fn&& callback)
+        {
+            using return_t = std::invoke_result_t<Fn, ResultT>;
 
-    return AsyncResult<return_t>{std::move(prms.get_future())};
-  }
+            std::promise<return_t> prms;
+            prms.set_value(std::move(callback(m_waitable.get())));
 
-  ResultT get() {
-    if constexpr (std::is_same_v<void, ResultT>) {
-      m_waitable.get();
-      return;
-    }
+            return AsyncResult<return_t>{std::move(prms.get_future())};
+        }
 
-    return m_waitable.get();
-  }
+        ResultT get()
+        {
+            if constexpr (std::is_same_v<void, ResultT>)
+            {
+                m_waitable.get();
+                return;
+            }
 
-  void wait() {
-    m_waitable.wait();
-    return;
-  }
+            return m_waitable.get();
+        }
 
-  bool valid() const { return m_waitable.valid(); }
-};
+        void wait()
+        {
+            m_waitable.wait();
+            return;
+        }
+
+        bool valid() const
+        {
+            return m_waitable.valid();
+        }
+    };
 }  // namespace util
 
 #endif  // ASYNC_RESULT_H
