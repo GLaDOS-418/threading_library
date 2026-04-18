@@ -4,16 +4,13 @@
 #include <atomic>
 #include <condition_variable>
 #include <cstddef>
-#include <functional>
 #include <memory>
 #include <mutex>
 #include <optional>
-#include <stdexcept>
-#include <system_error>
 #include <utility>
 #include <vector>
 
-namespace ds
+namespace DataStructures
 {
     template<typename T, size_t BLOCK_SIZE = 512>
         requires(std::copyable<T> || std::movable<T>)
@@ -212,6 +209,6 @@ namespace ds
             return m_size;
         }
     };
-}  // namespace ds
+}  // namespace DataStructures
 
 #endif  // CONCURRENT_BLOCK_QUEUE_H
