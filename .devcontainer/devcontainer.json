@@ -1,0 +1,30 @@
+{
+    "name": "threading_library",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "runArgs": [
+        "--cap-add=SYS_PTRACE",
+        "--security-opt",
+        "seccomp=unconfined"
+    ],
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "cmake.configureOnOpen": true,
+                "editor.formatOnSave": true
+            },
+            "extensions": [
+                "llvm-vs-code-extensions.vscode-clangd",
+                "ms-vscode.cmake-tools",
+                "twxs.cmake",
+                "ms-vscode.cpptools-themes",
+                "ms-vscode.makefile-tools",
+                "ms-python.python",
+                "ms-vscode-remote.remote-containers"
+            ]
+        }
+    },
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=delegated",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
+}

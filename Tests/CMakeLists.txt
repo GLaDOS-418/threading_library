@@ -24,9 +24,11 @@ target_link_libraries(
 ###########################################################################################
 # Apply common compiler options
 ###########################################################################################
+enable_project_build_modes(threading_library_tests)
 enable_project_warnings(threading_library_tests)
+enable_project_hardening(threading_library_tests)
 enable_project_sanitizers(threading_library_tests)
-enable_project_iwyu(threading_library_tests)
+enable_project_optional_tools(threading_library_tests)
 
 ###########################################################################################
 # Add test sources

@@ -32,7 +32,7 @@ The intent is to provide a starting point for a concurrent code.
 - with `BLOCK_SIZE=1`, it's essentially a queue based on singly linked-list. default is `BLOCK_SIZE=512`
 - unless necessary, push & pop can work independently without blocking each other.
 - usage :  `DataStructures::ConcurrentBlockQueue<std::string,256> bq;`
-<img src="./resources/images/concurrent_blocked_queue.svg" alt="block_queue" style="max-width: 50%;"/>
+<img src="./Docs/Resources/images/concurrent_blocked_queue.svg" alt="block_queue" style="max-width: 50%;"/>
 
 ##### [DataStructures::SynchronizedQueue](./Library/Includes/DataStructures/SynchronizedQueue.hpp) <a name="synchronized-queue"/>
 - coarse-grained synchronized FIFO-queue, implemented using `std::deque`
@@ -73,43 +73,16 @@ The intent is to provide a starting point for a concurrent code.
 
 ### build
 
-- C++ version used: `-std=c++20`
-- compiler: `g++` (verified on this repository), any C++20-capable toolchain should work
-- build manager: `cmake`
-- package manager: `conan`
-- testing framework: `GoogleTest`
-- include analysis: `include-what-you-use`
+- build and tool usage are documented in [Docs/Build.md](./Docs/Build.md)
 - example target: `threading_library_smoke_app`
 - test target: `threading_library_tests`
-
-1. install dependencies with `make deps`
-2. configure with `make configure`
-3. build with `make build`
-4. build only the example apps with `make examples`
-5. run include analysis with `make iwyu`
-6. run include analysis and auto-apply fixes with `make iwyu-fix`
+- generated documentation uses [Docs/Doxyfile](./Docs/Doxyfile)
+- static assets now live under [Docs/Resources](./Docs/Resources)
 
 ### test
 
 1. run `make test`
 2. or run `ctest --test-dir _build/debug --output-on-failure`
-
-### include hygiene
-
-`include-what-you-use` helps find missing and unnecessary `#include` directives.
-It is useful for trimming transitive includes, but it is an analysis tool rather
-than a complete formatter or refactoring pass by itself.
-
-1. install `include-what-you-use` so the binary is available in `PATH`
-    - REF: https://github.com/include-what-you-use/include-what-you-use
-2. run `make iwyu`
-3. inspect the diagnostics and apply the suggested include changes manually
-4. or run `make iwyu-fix` if `fix_includes.py` is also installed and available in `PATH`
-5. `make iwyu-fix` defaults to aggressive cleanup with `--nosafe_headers`
-6. if you want IWYU's `// for ...` rationale comments written into include lines,
-   use:
-   `make iwyu-fix IWYU_FIX_ARGS="--nosafe_headers --comments --update_comments"`
-7. rerun `make build` and `make test` after auto-fix
 
 
 ### todo
@@ -117,7 +90,6 @@ than a complete formatter or refactoring pass by itself.
 - [ ] concurrent algorithms like zip.
 - [ ] utilities like guarded resource, spin lock, seqlock, ticket lock.
 - [ ] homogenize container interface using concepts.
-- [ ] setup environment in a dockerfile.
 - [ ] add github actions.
 - [ ] add benchmark.
 - [ ] improve documentation e.g. add code examples etc.
