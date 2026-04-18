@@ -1,36 +1,38 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(threading_library VERSION 0.1.0 LANGUAGES CXX)
+###########################################################################################
+# Find test dependencies
+###########################################################################################
+find_package(GTest CONFIG REQUIRED)
+include(GoogleTest)
 
 ###########################################################################################
-# Include common CMake configuration
+# Create unit test executable
 ###########################################################################################
-include("${CMAKE_CURRENT_SOURCE_DIR}/BuildConfig/Cmake/DefaultProjectCmakeSettings.cmake")
+add_executable(threading_library_tests)
 
 ###########################################################################################
-# Project options
+# Add library dependencies
 ###########################################################################################
-option(BUILD_EXAMPLES "Build example executables" ON)
-option(BUILD_TESTS "Build unit tests" ON)
-option(ENABLE_ASAN "Enable AddressSanitizer in Debug builds" OFF)
-option(ENABLE_UBSAN "Enable UndefinedBehaviorSanitizer in Debug builds" OFF)
+target_link_libraries(
+    threading_library_tests
+    PRIVATE
+    GTest::gtest_main
+    threading_library::threading_library
+)
 
 ###########################################################################################
-# Add library
+# Apply common compiler options
 ###########################################################################################
-add_subdirectory(Library)
+enable_project_warnings(threading_library_tests)
+enable_project_sanitizers(threading_library_tests)
 
 ###########################################################################################
-# Add examples
+# Add test sources
 ###########################################################################################
-if(BUILD_EXAMPLES)
-    add_subdirectory(Examples)
-endif()
+add_subdirectory(Src)
 
 ###########################################################################################
-# Add tests
+# Discover unit tests
 ###########################################################################################
-if(BUILD_TESTS)
-    enable_testing()
-    add_subdirectory(Tests)
-endif()
+gtest_discover_tests(threading_library_tests)

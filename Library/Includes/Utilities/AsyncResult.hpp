@@ -1,12 +1,12 @@
-#ifndef ASYNC_RESULT_H
-#define ASYNC_RESULT_H
+#ifndef _LIBRARY_UTILITIES_ASYNCRESULT_HPP
+#define _LIBRARY_UTILITIES_ASYNCRESULT_HPP
 
 #include <concepts>
 #include <functional>
 #include <future>
 #include <type_traits>
 
-namespace util
+namespace Utilities
 {
 
     template<typename ResultT>
@@ -16,13 +16,8 @@ namespace util
         std::future<ResultT> m_waitable;
 
     public:
-        AsyncResult(auto&& waitable)
-            : m_waitable{std::move(waitable)}
-        {
-        }
-
-        AsyncResult(const auto& waitable)
-            : m_waitable{waitable}
+        explicit AsyncResult(std::future<ResultT>&& waitable)
+            : m_waitable(std::move(waitable))
         {
         }
 
@@ -69,6 +64,6 @@ namespace util
             return m_waitable.valid();
         }
     };
-}  // namespace util
+}  // namespace Utilities
 
-#endif  // ASYNC_RESULT_H
+#endif  // !_LIBRARY_UTILITIES_ASYNCRESULT_HPP

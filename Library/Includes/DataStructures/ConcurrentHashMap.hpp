@@ -1,5 +1,5 @@
-#ifndef CONCURRENT_HASHMAP_H
-#define CONCURRENT_HASHMAP_H
+#ifndef _LIBRARY_DATASTRUCTURES_CONCURRENTHASHMAP_HPP
+#define _LIBRARY_DATASTRUCTURES_CONCURRENTHASHMAP_HPP
 
 #include <array>
 #include <atomic>
@@ -13,7 +13,7 @@
 #include <unordered_map>
 #include <utility>
 
-namespace ds
+namespace DataStructures
 {
     template<class KeyT, class ValueT, class HashFn = std::hash<KeyT>, const size_t BUCKETS = 1031>
     class ConcurrentHashMap
@@ -91,5 +91,5 @@ namespace ds
             return !m_size;
         }
     };
-}  // namespace ds
-#endif  // CONCURRENT_HASMAP
+}  // namespace DataStructures
+#endif  // !_LIBRARY_DATASTRUCTURES_CONCURRENTHASHMAP_HPP

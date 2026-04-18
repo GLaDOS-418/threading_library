@@ -1,6 +1,7 @@
-#ifndef CONCURRENT_STACK_H
-#define CONCURRENT_STACK_H
+#ifndef _LIBRARY_DATASTRUCTURES_CONCURRENTSTACK_HPP
+#define _LIBRARY_DATASTRUCTURES_CONCURRENTSTACK_HPP
 
+#include <atomic>
 #include <condition_variable>
 #include <cstddef>
 #include <deque>
@@ -9,7 +10,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace ds
+namespace DataStructures
 {
 
     template<typename Data, size_t ContainerSize = 0>
@@ -81,6 +82,6 @@ namespace ds
         }
     };
 
-}  // namespace ds
+}  // namespace DataStructures
 
-#endif  // CONCURRENT_STACK_H
+#endif  // !_LIBRARY_DATASTRUCTURES_CONCURRENTSTACK_HPP

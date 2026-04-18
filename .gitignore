@@ -2,11 +2,11 @@
 .vscode/*
 CMakeCache.*
 CMakeFiles/*
-
 CMakeUserPresets.json
 
 # Build results
 [Bb]uild/*
+_build/*
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
@@ -59,4 +59,3 @@ bld/
 *.app
 
 # End of https://www.toptal.com/developers/gitignore/api/c++
-

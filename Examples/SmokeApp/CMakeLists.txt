@@ -1,36 +1,39 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(threading_library VERSION 0.1.0 LANGUAGES CXX)
+###########################################################################################
+# Create smoke example executable
+###########################################################################################
+add_executable(threading_library_smoke_app)
 
 ###########################################################################################
-# Include common CMake configuration
+# Add example sources
 ###########################################################################################
-include("${CMAKE_CURRENT_SOURCE_DIR}/BuildConfig/Cmake/DefaultProjectCmakeSettings.cmake")
+target_sources(
+    threading_library_smoke_app
+    PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp"
+)
 
 ###########################################################################################
-# Project options
+# Add library to the example executable
 ###########################################################################################
-option(BUILD_EXAMPLES "Build example executables" ON)
-option(BUILD_TESTS "Build unit tests" ON)
-option(ENABLE_ASAN "Enable AddressSanitizer in Debug builds" OFF)
-option(ENABLE_UBSAN "Enable UndefinedBehaviorSanitizer in Debug builds" OFF)
+target_link_libraries(
+    threading_library_smoke_app
+    PRIVATE
+    threading_library::threading_library
+)
 
 ###########################################################################################
-# Add library
+# Apply common compiler options
 ###########################################################################################
-add_subdirectory(Library)
+enable_project_warnings(threading_library_smoke_app)
+enable_project_sanitizers(threading_library_smoke_app)
 
 ###########################################################################################
-# Add examples
+# Add the threading_library_smoke_app target as a dependency of the "examples" aggregator
+# target so it gets built when users build the "examples" target from the top level using
+# "make examples" or "cmake --build . --target examples". This keeps the top-level workflow
+# decoupled from individual example names while still giving users a stable handle to "build
+# all examples".
 ###########################################################################################
-if(BUILD_EXAMPLES)
-    add_subdirectory(Examples)
-endif()
-
-###########################################################################################
-# Add tests
-###########################################################################################
-if(BUILD_TESTS)
-    enable_testing()
-    add_subdirectory(Tests)
-endif()
+add_dependencies(examples threading_library_smoke_app)

@@ -1,7 +1,8 @@
-#ifndef CONCURRENT_BLOCK_QUEUE_H
-#define CONCURRENT_BLOCK_QUEUE_H
+#ifndef _LIBRARY_DATASTRUCTURES_CONCURRENTBLOCKQUEUE_HPP
+#define _LIBRARY_DATASTRUCTURES_CONCURRENTBLOCKQUEUE_HPP
 
 #include <atomic>
+#include <concepts>
 #include <condition_variable>
 #include <cstddef>
 #include <memory>
@@ -211,4 +212,4 @@ namespace DataStructures
     };
 }  // namespace DataStructures
 
-#endif  // CONCURRENT_BLOCK_QUEUE_H
+#endif  // !_LIBRARY_DATASTRUCTURES_CONCURRENTBLOCKQUEUE_HPP

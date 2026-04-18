@@ -1,7 +1,7 @@
-#ifndef THREAD_POOL_H
-#define THREAD_POOL_H
+#ifndef _LIBRARY_UTILITIES_THREADPOOL_HPP
+#define _LIBRARY_UTILITIES_THREADPOOL_HPP
 
-#include "util/async_result.h"
+#include "Utilities/AsyncResult.hpp"
 #include <atomic>
 #include <cstddef>
 #include <functional>
@@ -10,16 +10,16 @@
 #include <type_traits>
 #include <vector>
 
-#include <ds/concurrent_block_queue.h>
-#include <util/function_wrapper.h>
+#include "DataStructures/ConcurrentBlockQueue.hpp"
+#include "Utilities/FunctionWrapper.hpp"
 
-namespace util
+namespace Utilities
 {
 
     class ThreadPool
     {
-        using WaitableTask = FunctionWrapper;
-        using TaskQueue = ds::ConcurrentBlockQueue<WaitableTask>;
+        using WaitableTask = Utilities::FunctionWrapper;
+        using TaskQueue = DataStructures::ConcurrentBlockQueue<WaitableTask>;
         using WorkerGroup = std::vector<std::jthread>;
 
         TaskQueue tasks;
@@ -56,7 +56,7 @@ namespace util
             try
             {
                 for (auto i = 0u; i < total_workers; ++i)
-                    workers.emplace_back(std::jthread(&util::ThreadPool::worker_method, this));
+                    workers.emplace_back(std::jthread(&Utilities::ThreadPool::worker_method, this));
             }
             catch (...)
             {
@@ -93,12 +93,12 @@ namespace util
             std::packaged_task<return_t()> task(std::bind(std::forward<Fn>(callable), std::forward<Args>(args)...));
 
             // caller waits on this future
-            AsyncResult<return_t> result{task.get_future()};
+            Utilities::AsyncResult<return_t> result{task.get_future()};
             tasks.push(std::move(task));
 
             return result;
         }
     };
-};  // namespace util
+}  // namespace Utilities
 
-#endif  // THREAD_POOL_H
+#endif  // !_LIBRARY_UTILITIES_THREADPOOL_HPP

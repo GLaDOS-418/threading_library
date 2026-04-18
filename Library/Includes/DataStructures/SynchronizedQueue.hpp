@@ -1,6 +1,7 @@
-#ifndef SYNCHRONIZED_QUEUE_H
-#define SYNCHRONIZED_QUEUE_H
+#ifndef _LIBRARY_DATASTRUCTURES_SYNCHRONIZEDQUEUE_HPP
+#define _LIBRARY_DATASTRUCTURES_SYNCHRONIZEDQUEUE_HPP
 
+#include <concepts>
 #include <condition_variable>
 #include <cstddef>
 #include <cstdlib>
@@ -11,7 +12,7 @@
 #include <thread>
 #include <utility>
 
-namespace ds
+namespace DataStructures
 {
 
     template<typename Data>
@@ -50,7 +51,7 @@ namespace ds
         void push(Data val)
         {
             std::lock_guard<std::mutex> guard(lock);
-            data.emplace_back(val);
+            data.emplace_back(std::move(val));
             conditional.notify_one();
         }
 
@@ -67,6 +68,6 @@ namespace ds
         }
     };
 
-}  // namespace ds
+}  // namespace DataStructures
 
-#endif  // SYNCHRONIZED_QUEUE_H
+#endif  // !_LIBRARY_DATASTRUCTURES_SYNCHRONIZEDQUEUE_HPP
