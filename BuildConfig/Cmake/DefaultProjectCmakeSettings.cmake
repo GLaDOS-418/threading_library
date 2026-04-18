@@ -24,6 +24,25 @@ endif()
 
 message(STATUS "CMake build type: ${CMAKE_BUILD_TYPE}")
 
+if(ENABLE_IWYU)
+    set(PROJECT_IWYU_EXECUTABLE "${PROJECT_IWYU_EXECUTABLE}" CACHE FILEPATH "Path to include-what-you-use executable")
+
+    if(NOT PROJECT_IWYU_EXECUTABLE)
+        find_program(PROJECT_IWYU_EXECUTABLE NAMES include-what-you-use iwyu)
+    endif()
+
+    if(NOT PROJECT_IWYU_EXECUTABLE)
+        message(
+            FATAL_ERROR
+            "ENABLE_IWYU is ON, but include-what-you-use was not found in PATH. "
+            "Set PROJECT_IWYU_EXECUTABLE explicitly if your shell config provides it "
+            "only in interactive shells."
+        )
+    endif()
+
+    message(STATUS "Using include-what-you-use: ${PROJECT_IWYU_EXECUTABLE}")
+endif()
+
 ###########################################################################################
 # Define common functions for targets
 ###########################################################################################
@@ -89,5 +108,20 @@ function(enable_project_sanitizers target_name)
         ${target_name}
         INTERFACE
         "$<$<CONFIG:Debug>:${sanitizer_flags}>"
+    )
+endfunction()
+
+function(enable_project_iwyu target_name)
+    if(NOT ENABLE_IWYU)
+        return()
+    endif()
+
+    # IWYU is most useful on repo-owned concrete targets. Applying it as a
+    # target property keeps consumer builds unaffected while still analyzing the
+    # translation units that include this header-only library.
+    set_property(
+        TARGET ${target_name}
+        PROPERTY CXX_INCLUDE_WHAT_YOU_USE
+        "${PROJECT_IWYU_EXECUTABLE};-Xiwyu;--error_always"
     )
 endfunction()

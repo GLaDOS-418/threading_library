@@ -1,6 +1,6 @@
-#include <string>
-
 #include <gtest/gtest.h>
+#include <string>
+#include <optional>
 
 #include "DataStructures/ConcurrentHashMap.hpp"
 

@@ -1,9 +1,11 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <optional>
 
 #include "DataStructures/ConcurrentBlockQueue.hpp"
 #include "Utilities/ThreadPool.hpp"
+#include "Utilities/AsyncResult.hpp"
 
 int main()
 {

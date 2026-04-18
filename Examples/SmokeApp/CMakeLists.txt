@@ -28,6 +28,7 @@ target_link_libraries(
 ###########################################################################################
 enable_project_warnings(threading_library_smoke_app)
 enable_project_sanitizers(threading_library_smoke_app)
+enable_project_iwyu(threading_library_smoke_app)
 
 ###########################################################################################
 # Add the threading_library_smoke_app target as a dependency of the "examples" aggregator

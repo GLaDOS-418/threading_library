@@ -2,9 +2,9 @@
 #define _LIBRARY_UTILITIES_ASYNCRESULT_HPP
 
 #include <concepts>
-#include <functional>
 #include <future>
 #include <type_traits>
+#include <utility>
 
 namespace Utilities
 {

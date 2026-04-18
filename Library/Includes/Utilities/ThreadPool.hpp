@@ -1,7 +1,6 @@
 #ifndef _LIBRARY_UTILITIES_THREADPOOL_HPP
 #define _LIBRARY_UTILITIES_THREADPOOL_HPP
 
-#include "Utilities/AsyncResult.hpp"
 #include <atomic>
 #include <cstddef>
 #include <functional>
@@ -9,7 +8,10 @@
 #include <thread>
 #include <type_traits>
 #include <vector>
+#include <optional>
+#include <utility>
 
+#include "Utilities/AsyncResult.hpp"
 #include "DataStructures/ConcurrentBlockQueue.hpp"
 #include "Utilities/FunctionWrapper.hpp"
 

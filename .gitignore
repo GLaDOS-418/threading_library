@@ -3,6 +3,7 @@
 CMakeCache.*
 CMakeFiles/*
 CMakeUserPresets.json
+compile_commands.json
 
 # Build results
 [Bb]uild/*

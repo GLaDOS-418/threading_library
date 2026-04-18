@@ -26,6 +26,7 @@ target_link_libraries(
 ###########################################################################################
 enable_project_warnings(threading_library_tests)
 enable_project_sanitizers(threading_library_tests)
+enable_project_iwyu(threading_library_tests)
 
 ###########################################################################################
 # Add test sources

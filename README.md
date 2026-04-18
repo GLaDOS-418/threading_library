@@ -78,6 +78,7 @@ The intent is to provide a starting point for a concurrent code.
 - build manager: `cmake`
 - package manager: `conan`
 - testing framework: `GoogleTest`
+- include analysis: `include-what-you-use`
 - example target: `threading_library_smoke_app`
 - test target: `threading_library_tests`
 
@@ -85,11 +86,30 @@ The intent is to provide a starting point for a concurrent code.
 2. configure with `make configure`
 3. build with `make build`
 4. build only the example apps with `make examples`
+5. run include analysis with `make iwyu`
+6. run include analysis and auto-apply fixes with `make iwyu-fix`
 
 ### test
 
 1. run `make test`
 2. or run `ctest --test-dir _build/debug --output-on-failure`
+
+### include hygiene
+
+`include-what-you-use` helps find missing and unnecessary `#include` directives.
+It is useful for trimming transitive includes, but it is an analysis tool rather
+than a complete formatter or refactoring pass by itself.
+
+1. install `include-what-you-use` so the binary is available in `PATH`
+    - REF: https://github.com/include-what-you-use/include-what-you-use
+2. run `make iwyu`
+3. inspect the diagnostics and apply the suggested include changes manually
+4. or run `make iwyu-fix` if `fix_includes.py` is also installed and available in `PATH`
+5. `make iwyu-fix` defaults to aggressive cleanup with `--nosafe_headers`
+6. if you want IWYU's `// for ...` rationale comments written into include lines,
+   use:
+   `make iwyu-fix IWYU_FIX_ARGS="--nosafe_headers --comments --update_comments"`
+7. rerun `make build` and `make test` after auto-fix
 
 
 ### todo

@@ -14,6 +14,7 @@ option(BUILD_EXAMPLES "Build example executables" ON)
 option(BUILD_TESTS "Build unit tests" ON)
 option(ENABLE_ASAN "Enable AddressSanitizer in Debug builds" OFF)
 option(ENABLE_UBSAN "Enable UndefinedBehaviorSanitizer in Debug builds" OFF)
+option(ENABLE_IWYU "Run include-what-you-use on repo-owned compile targets" OFF)
 
 ###########################################################################################
 # Add library

@@ -1,7 +1,7 @@
+#include <gtest/gtest.h>
 #include <future>
 #include <string>
-
-#include <gtest/gtest.h>
+#include <optional>
 
 #include "DataStructures/ConcurrentBlockQueue.hpp"
 
