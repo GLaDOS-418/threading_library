@@ -1,9 +1,39 @@
 #!/usr/bin/env python3
-"""Normalize header guards across one or more header files.
+"""Normalize C/C++ header guards in place.
 
-The tool is intentionally batch-oriented: Make invokes it once for the public
-header tree so we avoid paying Python process startup for every single file.
-Single-file usage is still supported for ad hoc fixes.
+Usage:
+    fix_header_guards.py <project-root-or-header> [<project-root-or-header> ...]
+
+Each directory argument is treated as a separate project root. Header guards are
+computed from the header path relative to that root, not from the absolute
+filesystem path. For example, running this from anywhere:
+
+    fix_header_guards.py ~/code/oss/threading_library
+
+will turn:
+
+    ~/code/oss/threading_library/Library/Includes/DataStructures/Stack.hpp
+
+into:
+
+    _LIBRARY_DATASTRUCTURES_STACK_HPP
+
+A direct header argument is also supported:
+
+    fix_header_guards.py ~/code/oss/threading_library/Library/Includes/Stack.hpp
+
+In that case the header's parent directory is the root, so the guard becomes:
+
+    _STACK_HPP
+
+Only .h and .hpp files are considered. The script rewrites existing guards when
+it can find a normal #ifndef/#define pair, or adds a guard around files that do
+not have one.
+
+Do not pass a parent directory that contains several independent projects unless
+you want guards to be relative to that parent. Pass each project root as its own
+argument instead. For single-header usage, the header's parent directory is used
+as the root.
 """
 
 from __future__ import annotations
@@ -22,29 +52,29 @@ DEFINE_PATTERN = re.compile(r"^\s*#define\s+(\S+)\s*$")
 ENDIF_PATTERN = re.compile(r"^\s*#endif\s*(//\s*!?\s*(\S+))?\s*$")
 
 
-def compute_expected_guard(header_path: Path) -> str:
+def compute_expected_guard(header_path: Path, project_root: Path) -> str:
     parts: list[str] = []
+    # The root-relative path is the important part of the algorithm: it keeps
+    # generated guards stable across machines and checkout locations.
+    relative_header_path = header_path.resolve().relative_to(project_root.resolve())
 
-    for parent in header_path.parent.parts:
-        # Absolute paths include a filesystem anchor such as "/" or "C:\", but
-        # that is not meaningful for the guard name and would make ad hoc runs
-        # unstable across machines.
-        if parent == header_path.anchor:
-            continue
+    for parent in relative_header_path.parent.parts:
         # Layout-only folders are skipped so the guard reflects the library API
         # path rather than incidental directory structure.
         if parent.lower() not in EXCLUDE_FOLDERS:
             parts.append(parent)
 
-    suffix = header_path.suffix.lower()
+    suffix = relative_header_path.suffix.lower()
     suffix_name = "H" if ".h" == suffix else "HPP"
-    parts.append(header_path.stem)
+    parts.append(relative_header_path.stem)
 
     return "_" + "_".join(part.upper() for part in parts) + "_" + suffix_name
 
 
-def collect_header_files(paths: list[Path]) -> tuple[list[Path], list[str]]:
-    header_files: set[Path] = set()
+def collect_header_files(paths: list[Path]) -> tuple[list[tuple[Path, Path]], list[str]]:
+    # Key by resolved path so the same header can be reached through multiple
+    # arguments without being rewritten twice in one run.
+    header_files: dict[Path, tuple[Path, Path]] = {}
     errors: list[str] = []
 
     for path in paths:
@@ -54,16 +84,20 @@ def collect_header_files(paths: list[Path]) -> tuple[list[Path], list[str]]:
 
         if path.is_file():
             if path.suffix.lower() in HEADER_SUFFIXES:
-                header_files.add(path)
+                # A direct file argument has no wider project context, so its
+                # parent directory becomes the root for guard computation.
+                header_files.setdefault(path.resolve(), (path, path.parent))
             continue
 
         for candidate in path.rglob("*"):
             if candidate.is_file() and candidate.suffix.lower() in HEADER_SUFFIXES:
-                header_files.add(candidate)
+                # A directory argument is the project root for every header
+                # discovered under it.
+                header_files.setdefault(candidate.resolve(), (candidate, path))
 
     # A deterministic order keeps tool output stable and avoids needless churn
     # when the script is used in CI or from a Make target.
-    return sorted(header_files), errors
+    return sorted(header_files.values(), key=lambda header: header[0]), errors
 
 
 def build_updated_content(source: str, expected_guard: str) -> str:
@@ -73,6 +107,9 @@ def build_updated_content(source: str, expected_guard: str) -> str:
     define_line: int | None = None
     endif_line: int | None = None
 
+    # Use the first #ifndef followed by the first later #define as the guard
+    # opening. This intentionally avoids rewriting unrelated preprocessor uses
+    # deeper in the file.
     for index, line in enumerate(lines):
         if None == ifndef_line:
             if IFNDEF_PATTERN.match(line):
@@ -84,6 +121,7 @@ def build_updated_content(source: str, expected_guard: str) -> str:
                 define_line = index
                 break
 
+    # The guard closing is conventionally the last #endif in the file.
     for index in range(len(lines) - 1, -1, -1):
         if ENDIF_PATTERN.match(lines[index]):
             endif_line = index
@@ -115,14 +153,14 @@ def build_updated_content(source: str, expected_guard: str) -> str:
     return "".join(lines)
 
 
-def fix_header_guard(header_path: Path) -> tuple[bool, bool]:
+def fix_header_guard(header_path: Path, project_root: Path) -> tuple[bool, bool]:
     try:
         original_content = header_path.read_text(encoding="utf-8")
     except OSError as error:
         print(f"ERROR: Failed to read '{header_path}': {error}", file=sys.stderr)
         return False, False
 
-    expected_guard = compute_expected_guard(header_path)
+    expected_guard = compute_expected_guard(header_path, project_root)
     updated_content = build_updated_content(original_content, expected_guard)
 
     # Skip writes for unchanged files so normal builds do not perturb mtimes and
@@ -154,8 +192,8 @@ def main(argv: list[str]) -> int:
     changed_count = 0
     success = not errors
 
-    for header_path in header_files:
-        changed, processed = fix_header_guard(header_path)
+    for header_path, project_root in header_files:
+        changed, processed = fix_header_guard(header_path, project_root)
         changed_count += int(changed)
         success = success and processed
 
